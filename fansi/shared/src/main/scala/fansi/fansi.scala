@@ -221,21 +221,23 @@ object Str{
     *               Off by default
     */
   def apply(raw: CharSequence, strict: Boolean = false): fansi.Str = {
-    // Pre-allocate some arrays for us to fill up. They will
+    // Pre-allocate some arrays for us to fill up. They will probably be
+    // too big if the input has any ansi codes at all but that's ok, we'll
+    // trim them later.
     val chars = new Array[Char](raw.length)
     val colors = new Array[Int](raw.length)
 
     var currentColor = 0
     var sourceIndex = 0
     var destIndex = 0
-
-    while(sourceIndex < raw.length){
+    val length = raw.length
+    while(sourceIndex < length){
       val char = raw.charAt(sourceIndex)
       if (char == '\u001b' || char == '\u009b') {
         ParseMap.query(raw, sourceIndex) match{
-          case Some((offset, v)) =>
-            currentColor = v.transform(currentColor)
-            sourceIndex += offset
+          case Some(tuple) =>
+            currentColor = tuple._2.transform(currentColor)
+            sourceIndex += tuple._1
           case None =>
             if (strict) {
               // If we found the start of an escape code that was missed by our
@@ -305,9 +307,7 @@ sealed trait Attr{
   def resetMask: Int
   def applyMask: Int
   def transform(state: Int) = (state & ~resetMask) | applyMask
-
   def name: String
-  def matches(state: Int) = (state & resetMask) == applyMask
   def apply(s: fansi.Str) = s.overlay(this, 0, s.length)
 }
 object Attr{

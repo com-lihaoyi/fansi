@@ -199,17 +199,56 @@ object FansiTests extends TestSuite{
       }
     }
 
-    'perf{
-      val input = s"+++$R---$G***$B///" * 1000
-      val start = System.currentTimeMillis()
-      var count = 0
-      while(System.currentTimeMillis() < start + 5000){
-        count += 1
-        fansi.Str(input)
-      }
-      val end = System.currentTimeMillis()
-      count
-    }
+//    'perf{
+//      val input = s"+++$R---$G***$B///" * 1000
+//
+//      'parsing{
+//
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          fansi.Str(input)
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'concat{
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val fansiStr = fansi.Str(input)
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          fansiStr ++ fansiStr
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'splitAt{
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val fansiStr = fansi.Str(input)
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          fansiStr.splitAt(count % fansiStr.length)
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'substring{
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val fansiStr = fansi.Str(input)
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          val start = count % fansiStr.length
+//          val end = count % (fansiStr.length - start) + start
+//          fansiStr.substring(start, end)
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//    }
   }
 }
 

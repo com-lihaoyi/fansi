@@ -32,6 +32,9 @@ lazy val fansi = crossProject
           </developer>
         </developers>
   )
+  .jsSettings(
+    scalaJSUseRhino in Global := false
+  )
 
 lazy val fansiJVM = fansi.jvm
 lazy val fansiJS = fansi.js
