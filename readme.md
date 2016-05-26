@@ -2,7 +2,8 @@ Fansi 0.1.0
 ===========
 
 ```scala
-"com.lihaoyi" % "fansi" % "0.1.1"
+"com.lihaoyi" %% "fansi" % "0.1.0"
+"com.lihaoyi" %%% "fansi" % "0.1.0" // Scala.js
 ```
 
 Fansi is a Scala library to make it easy to deal with colored Ansi 
