@@ -152,6 +152,11 @@ The main operations you need to know are:
 - `.render` to convert a `fansi.Str` back into a `java.lang.String` with all
   necessary Ansi color codes within it
   
+Scaladoc
+--------
+
+- [0.1.0](http://lihaoyi.github.io/fansi/)
+
 Changelog
 ---------
 
