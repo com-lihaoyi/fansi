@@ -55,7 +55,7 @@ With Fansi, doing all these tasks is simple, error-proof and efficient:
 val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
 // Or fansi.Str("Hello World Ansi!").overlay(fansi.Color.Red) 
 
-val length = fansi.length // Fast and returns the non-colored length of string
+val length = colored.length // Fast and returns the non-colored length of string
 
 val coloredBlueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
 
