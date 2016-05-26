@@ -10,7 +10,7 @@ Fansi 0.1.0 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
 "com.lihaoyi" %%% "fansi" % "0.1.0" // Scala.js
 ```
 
-Fansi is a Scala library to make it easy to deal with colored fancy Ansi 
+Fansi is a Scala library to make it easy to deal with fancy colored Ansi 
 strings within your command-line programs. 
 
 While "normal" use of Ansi escapes with `java.lang.String`, you find yourself 
@@ -165,6 +165,20 @@ The main operations you need to know are:
 - `.render` to convert a `fansi.Str` back into a `java.lang.String` with all
   necessary Ansi color codes within it
   
+- If you want to dig into deeper, you can use the `getColors` and `getChars`
+  methods on `fansi.Str` to extract the raw data for your own use, and piece
+  it back together with `fansi.Str.fromArrays`. This allows you to perform 
+  fast, mutable array operations on the color/character arrays if you know what
+  you're doing and want to perform operations that are inconvenient or slow 
+  to do through `fansi.Str`'s immutable API.
+   
+`fansi.Str` currently has a relatively skelatal API: it is slightly smaller
+than what `java.lang.String` has, and definitely much less than what is 
+available on `scala.RichString`'s extension methods. Feel free to implement
+your own custom operations using `fromArrays` if you can't find what you want
+on `fansi.Str`, or send a patch if you think it's arguably general enough to
+be included in Fansi itself.
+
 Scaladoc
 --------
 
