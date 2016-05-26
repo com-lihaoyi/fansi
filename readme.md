@@ -1,6 +1,8 @@
 Fansi 0.1.0
 ===========
 
+[![Join the chat at https://gitter.im/lihaoyi/fansi](https://badges.gitter.im/lihaoyi/fansi.svg)](https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ```scala
 "com.lihaoyi" %% "fansi" % "0.1.0"
 "com.lihaoyi" %%% "fansi" % "0.1.0" // Scala.js
