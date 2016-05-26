@@ -1,5 +1,9 @@
-Fansi 0.1.0
-===========
+Fansi 0.1.0 [![Gitter Chat]](gitter-url) [![Build Status]](travis-url)
+======================================================================
+[Gitter Chat]: https://badges.gitter.im/Join%20Chat.svg
+[gitter-url]: https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[Build Status]: https://travis-ci.org/lihaoyi/fansi.svg
+[travis-url]: https://travis-ci.org/lihaoyi/fansi
 
 ```scala
 "com.lihaoyi" %% "fansi" % "0.1.0"
