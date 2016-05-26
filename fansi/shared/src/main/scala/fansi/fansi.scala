@@ -3,6 +3,7 @@ package fansi
 import java.util
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 /**
   * Encapsulates a string with associated ANSI colors and text decorations.
@@ -21,7 +22,12 @@ import scala.annotation.tailrec
   */
 case class Str private(private val chars: Array[Char], private val colors: Array[Str.State]) {
   require(chars.length == colors.length)
-
+  override def hashCode() = util.Arrays.hashCode(chars) + util.Arrays.hashCode(colors)
+  override def equals(other: Any) = other match{
+    case o: fansi.Str =>
+      util.Arrays.equals(chars, o.chars) && util.Arrays.equals(colors, o.colors)
+    case _ => false
+  }
   /**
     * Concatenates two [[fansi.Str]]s, preserving the colors in each one and
     * avoiding any interference between them
@@ -166,14 +172,14 @@ case class Str private(private val chars: Array[Char], private val colors: Array
   /**
     * Overlays the desired color over the specified range of the [[fansi.Str]].
     */
-  def overlay(overlayColor: Attr, start: Int = 0, end: Int = length) = {
+  def overlay(attrs: Attrs, start: Int = 0, end: Int = length) = {
     require(end >= start,
       s"end:$end must be greater than start:$end in fansiStr#overlay call"
     )
     val colorsOut = new Array[Int](colors.length)
     var i = 0
     while(i < colors.length){
-      if (i >= start && i < end) colorsOut(i) = overlayColor.transform(colors(i))
+      if (i >= start && i < end) colorsOut(i) = attrs.transform(colors(i))
       else colorsOut(i) = colors(i)
       i += 1
     }
@@ -284,9 +290,100 @@ object Str{
     } yield (str, color)
     new Trie(pairs :+ (Console.RESET -> Attr.Reset))
   }
+}
+
+/**
+  * Represents one or more [[fansi.Attr]]s, that can be passed around
+  * as a set or combined with other sets of [[fansi.Attr]]s.
+  *
+  * Note that a single [[Attr]] is a subclass of [[Attrs]]. If you want to
+  * know if this contains multiple [[Attr]]s, you should check for
+  * [[Attrs.Multiple]].
+  */
+sealed trait Attrs{
+
+  /**
+    * Apply these [[Attrs]] to the given [[fansi.Str]], making it take effect
+    * across the entire length of that string.
+    */
+  def apply(s: fansi.Str) = s.overlay(this, 0, s.length)
+
+  /**
+    * Which bits of the [[Str.State]] integer these [[Attrs]] will
+    * override when it is applied
+    */
+  def resetMask: Int
+
+  /**
+    * Which bits of the [[Str.State]] integer these [[Attrs]] will
+    * set to `1` when it is applied
+    */
+  def applyMask: Int
+
+  /**
+    * Apply the current [[Attrs]] to the [[Str.State]] integer,
+    * modifying it to represent the state after all changes have taken
+    * effect
+    */
+  def transform(state: Str.State) = (state & ~resetMask) | applyMask
+
+  /**
+    * Combine this [[fansi.Attr]] with one or more other [[fansi.Attr]]s
+    * so they can be passed around together
+    */
+  def ++(other: fansi.Attrs): fansi.Attrs
 
 }
 
+object Attrs{
+
+  val empty = Attrs()
+
+  def apply(attrs: Attr*): Attrs = {
+    var output = List.empty[Attr]
+    var resetMask = 0
+    var applyMask = 0
+    // Walk the list of attributes backwards, and aggregate only those whose
+    // `resetMask` is not going to get totally covered by the union of all
+    // `resetMask`s that come after it.
+    //
+    // Simultaneously build up the `applyMask`, which is the `applyMask` of
+    // all aggregated `attr`s whose own `applyMask` is not totally covered by
+    // the union of all `resetMask`s that come after.
+    for(attr <- attrs.reverseIterator){
+      if ((attr.resetMask & ~resetMask) != 0){
+        if ((attr.applyMask & resetMask) == 0) applyMask = applyMask | attr.applyMask
+        resetMask = resetMask | attr.resetMask
+        output = attr :: output
+      }
+    }
+
+    if (output.length == 1) output.head
+    else new Multiple(resetMask, applyMask, output.toArray.reverse:_*)
+  }
+
+  class Multiple private[Attrs] (val resetMask: Int,
+                                 val applyMask: Int,
+                                 val attrs: Attr*) extends Attrs{
+    assert(attrs.length != 1)
+    override def hashCode() = attrs.hashCode()
+    override def equals(other: Any) = (this, other) match{
+      case (lhs: Attr, rhs: Attr) => lhs eq rhs
+      case (lhs: Attr, rhs: Attrs.Multiple) if rhs.attrs.length == 1 => lhs eq rhs.attrs(0)
+      case (lhs: Attrs.Multiple, rhs: Attr) if lhs.attrs.length == 1 => lhs.attrs(0) eq rhs
+      case (lhs: Attrs.Multiple, rhs: Attrs.Multiple) => lhs.attrs eq rhs.attrs
+      case _ => false
+    }
+
+    override def toString = s"Attrs(${attrs.mkString(",")})"
+
+    def ++(other: fansi.Attrs) = Attrs(attrs ++ toSeq(other):_*)
+  }
+  def toSeq(attrs: Attrs) = attrs match{
+    case m: Multiple => m.attrs
+    case a: Attr => Seq(a)
+  }
+}
 /**
   * Represents a single, atomic ANSI escape sequence that results in a
   * color, background or decoration being added to the output. May or may not
@@ -299,16 +396,20 @@ object Str{
   *
   * http://misc.flogisoft.com/bash/tip_colors_and_formatting
   */
-sealed trait Attr{
+sealed trait Attr extends Attrs {
+  def attrs = Seq(this)
   /**
     * escapeOpt the actual ANSI escape sequence corresponding to this Attr
     */
   def escapeOpt: Option[String]
-  def resetMask: Int
-  def applyMask: Int
-  def transform(state: Int) = (state & ~resetMask) | applyMask
+
   def name: String
-  def apply(s: fansi.Str) = s.overlay(this, 0, s.length)
+
+  /**
+    * Combine this [[fansi.Attr]] with one or more other [[fansi.Attr]]s
+    * so they can be passed around together
+    */
+  def ++(other: fansi.Attrs): Attrs = Attrs(Array(this) ++ Attrs.toSeq(other):_*)
 }
 object Attr{
   /**
@@ -332,7 +433,7 @@ object Attr{
   * An [[Attr]] represented by an fansi escape sequence
   */
 case class EscapeAttr private[fansi](escape: String, resetMask: Int, applyMask: Int)
-                                   (implicit sourceName: sourcecode.Name) extends Attr{
+                                    (implicit sourceName: sourcecode.Name) extends Attr{
   def escapeOpt = Some(escape)
   val name = sourceName.value
   override def toString = escape + name + Console.RESET
@@ -342,7 +443,7 @@ case class EscapeAttr private[fansi](escape: String, resetMask: Int, applyMask: 
   * An [[Attr]] for which no fansi escape sequence exists
   */
 case class ResetAttr private[fansi](resetMask: Int, applyMask: Int)
-                                  (implicit sourceName: sourcecode.Name) extends Attr{
+                                   (implicit sourceName: sourcecode.Name) extends Attr{
   def escapeOpt = None
   val name = sourceName.value
   override def toString = name

@@ -27,14 +27,16 @@ object FansiTests extends TestSuite{
     'parsing{
       val r = fansi.Str(rgbOps).render
       assert(
-//        fansi.Str(rgbOps).plainText == "+++---***///",
-//        fansi.Str(rgb).plainText == "",
-        r == rgbOps + RTC//,
-//        fansi.Str(rgb).render == ""
+        fansi.Str(rgbOps).plainText == "+++---***///",
+        fansi.Str(rgb).plainText == "",
+        r == rgbOps + RTC,
+        fansi.Str(rgb).render == ""
       )
     }
 
-
+    'equality{
+      assert(fansi.Color.Red("foo") == fansi.Color.Red("foo"))
+    }
     'concat{
       val concated = (fansi.Str(rgbOps) ++ fansi.Str(rgbOps)).render
       val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
@@ -198,7 +200,57 @@ object FansiTests extends TestSuite{
         intercept[IllegalArgumentException]{ fansi.Str("foo").substring(2, 1)}
       }
     }
+    'multipleAttrs{
+      'identicalMasksGetCollapsed{
+        val redRed = fansi.Color.Red ++ fansi.Color.Red
+        assert(
+          redRed.resetMask == fansi.Color.Red.resetMask,
+          redRed.applyMask == fansi.Color.Red.applyMask
+        )
+      }
+      'overlappingMasksGetReplaced{
+        val redBlue = fansi.Color.Red ++ fansi.Color.Blue
+        assert(
+          redBlue.resetMask == fansi.Color.Blue.resetMask,
+          redBlue.applyMask == fansi.Color.Blue.applyMask
+        )
+      }
+      'semiOverlappingMasks{
+        val resetRed = fansi.Attr.Reset ++ fansi.Color.Red
+        val redReset = fansi.Color.Red ++ fansi.Attr.Reset
+        assert(
+          resetRed != fansi.Attr.Reset,
+          resetRed != fansi.Color.Red,
+          redReset == fansi.Attr.Reset,
+          redReset != fansi.Color.Red,
+          redReset != resetRed,
+          resetRed.resetMask == fansi.Attr.Reset.resetMask,
+          resetRed.applyMask == fansi.Color.Red.applyMask
+        )
+      }
+      'separateMasksGetCombined{
+        val redBold = fansi.Color.Red ++ fansi.Bold.On
 
+        assert(
+          redBold.resetMask == (fansi.Color.Red.resetMask | fansi.Bold.On.resetMask),
+          redBold.applyMask == (fansi.Color.Red.applyMask | fansi.Bold.On.applyMask)
+        )
+      }
+      'applicationWorks{
+        val redBlueBold = fansi.Color.Red ++ fansi.Color.Blue ++ fansi.Bold.On
+        val colored = redBlueBold("Hello World")
+        val separatelyColored = fansi.Bold.On(fansi.Color.Blue(fansi.Color.Red("Hello World")))
+        assert(colored.render == separatelyColored.render)
+      }
+      'equality{
+        assert(
+          fansi.Color.Blue ++ fansi.Color.Red == fansi.Color.Red,
+          fansi.Color.Red == fansi.Color.Blue ++ fansi.Color.Red,
+          fansi.Bold.On ++ fansi.Color.Red != fansi.Color.Red,
+          fansi.Color.Red != fansi.Bold.On ++ fansi.Color.Red
+        )
+      }
+    }
 //    'perf{
 //      val input = s"+++$R---$G***$B///" * 1000
 //
@@ -244,6 +296,27 @@ object FansiTests extends TestSuite{
 //          val start = count % fansiStr.length
 //          val end = count % (fansiStr.length - start) + start
 //          fansiStr.substring(start, end)
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'overlay{
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val fansiStr = fansi.Str(input)
+//        val attrs =
+//          fansi.Color.Red ++
+//          fansi.Color.Blue ++
+//          fansi.Bold.On ++
+//          fansi.Reversed.On ++
+//          fansi.Bold.Off ++
+//          fansi.Underlined.On
+//
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          val start = count % fansiStr.length
+//          val end = count % (fansiStr.length - start) + start
+//          fansiStr.overlay(attrs, start, end)
 //        }
 //        val end = System.currentTimeMillis()
 //        count
