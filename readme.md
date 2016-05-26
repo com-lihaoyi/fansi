@@ -23,7 +23,7 @@ val colored = Console.RED + "Hello World Ansi!" + Console.RESET
 To build your colored string. This works the first time, but is error prone
 on larger strings: e.g. did you remember to put a `Console.RESET` where it's
 necessary? Do you need to end with one to avoid leaking the color to the entire
-console after printing it?.
+console after printing it?
 
 Furthermore, some operations are fundamentally difficult or error-prone with
 this approach. For example,
