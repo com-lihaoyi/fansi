@@ -328,8 +328,9 @@ sealed trait Attrs{
   def transform(state: Str.State) = (state & ~resetMask) | applyMask
 
   /**
-    * Combine this [[fansi.Attr]] with one or more other [[fansi.Attr]]s
-    * so they can be passed around together
+    * Combine this [[fansi.Attrs]] with other [[fansi.Attrs]]s, returning one
+    * which when applied is equivalent to applying this one and then the `other`
+    * one in series.
     */
   def ++(other: fansi.Attrs): fansi.Attrs
 

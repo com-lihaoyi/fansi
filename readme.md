@@ -110,14 +110,19 @@ The main operations you need to know are:
   colored Ansi strings and manipulate them: concatenating, splitting,
   applying or removing colors, etc.
 
-- `fansi.Attr`s, such as `fansi.Bold.{On, Off}`, `fansi.Reversed.{On, Off}`, 
-  `fansi.Underlined.{On, Off}`, `fansi.Color.*`, `fansi.Back.*`, 
-  `fansi.Attr.Reset`. These are what you use to apply (or remove) colors and 
-  other decorations from `fansi.Str`s.
+- `fansi.Attr`s are the individual modifications you can make to an 
+  `fansi.Str`'s formatting. Examples are: 
+    - `fansi.Bold.{On, Off}`
+    - `fansi.Reversed.{On, Off}`
+    - `fansi.Underlined.{On, Off}` 
+    - `fansi.Color.*` 
+    - `fansi.Back.*` 
+    - `fansi.Attr.Reset`
   
-- `fansi.Attrs`: groups of `fansi.Attr` that can be passed around together,
-  combined via `++` or applied to `fansi.Str`s all at once. Any individual
-  `fansi.Attr` can be used when `fansi.Attrs` is required.
+- `fansi.Attrs`: A type that represents a group of zero or more `fansi.Attr`s. 
+  These that can be passed around together, combined via `++` or applied 
+  to `fansi.Str`s all at once. Any individual `fansi.Attr` can be used 
+  when `fansi.Attrs` is required, as can `fansi.Attrs.empty`. 
   
 - Using any of the `fansi.Attr` or `fansi.Attrs` mentioned above, e.g. 
   `fansi.Color.Red`, using `fansi.Color.Red("hello world ansi!")` to create a 
