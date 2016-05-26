@@ -105,7 +105,7 @@ too much and stomp over colors that already exist:
 
 `fansi.Str` allows you to perform these tasks safely and easily:
  
- ![FansiRocks](docs/FansiRocks.png)
+![FansiRocks](docs/FansiRocks.png)
 
 Fansi was originally a part of the [Ammonite REPL](http://www.lihaoyi.com/Ammonite/),
 but is now a standalone zero-dependency library anyone can use if they want
