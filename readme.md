@@ -1,4 +1,4 @@
-Fansi 0.1.0 [![Gitter Chat]](gitter-url) [![Build Status]](travis-url)
+Fansi 0.1.0 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
 ======================================================================
 [Gitter Chat]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
@@ -10,7 +10,7 @@ Fansi 0.1.0 [![Gitter Chat]](gitter-url) [![Build Status]](travis-url)
 "com.lihaoyi" %%% "fansi" % "0.1.0" // Scala.js
 ```
 
-Fansi is a Scala library to make it easy to deal with colored fansi Ansi 
+Fansi is a Scala library to make it easy to deal with colored fancy Ansi 
 strings within your command-line programs. 
 
 While "normal" use of Ansi escapes with `java.lang.String`, you find yourself 
@@ -110,6 +110,15 @@ too much and stomp over colors that already exist:
 `fansi.Str` allows you to perform these tasks safely and easily:
  
 ![FansiRocks](docs/FansiRocks.png)
+
+Fansi is also very efficient: `fansi.Str` uses just 3x as much memory as
+`java.lang.String` to hold all the additional formatting information.
+Its operations are probably about the same factor slower, as they are all 
+implemented using fast `arraycopy`s and while-loops similar to 
+`java.lang.String`. That means that - unlike fiddling with Ansi-codes using 
+regexes - you generally do not need to worry about performance when dealing with 
+`fansi.Str`s. Just treat them as you would `java.lang.String`s: splitting them,
+`substring`ing them, and applying or removing colors or other styles at-will.
 
 Fansi was originally a part of the [Ammonite REPL](http://www.lihaoyi.com/Ammonite/),
 but is now a standalone zero-dependency library anyone can use if they want

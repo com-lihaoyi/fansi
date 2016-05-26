@@ -185,7 +185,6 @@ case class Str private(private val chars: Array[Char], private val colors: Array
     }
     new Str(chars, colorsOut)
   }
-
 }
 
 object Str{
