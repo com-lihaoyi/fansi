@@ -66,7 +66,7 @@ val underlinedBlue = blueWorld.overlay(fansi.Underlined.On, 4, 13)
 
 And it just works:
 
-![Landing ](docs/landingPage.png)
+![LandingExample](docs/LandingExample.png)
 
 Why Fansi?
 ----------
@@ -113,6 +113,8 @@ The main operations you need to know are:
   colored Ansi strings and manipulate them: concatenating, splitting,
   applying or removing colors, etc.
 
+![fansi.Str](docs/Str.png)
+
 - `fansi.Attr`s are the individual modifications you can make to an 
   `fansi.Str`'s formatting. Examples are: 
     - `fansi.Bold.{On, Off}`
@@ -122,11 +124,15 @@ The main operations you need to know are:
     - `fansi.Back.*` 
     - `fansi.Attr.Reset`
   
-- `fansi.Attrs`: A type that represents a group of zero or more `fansi.Attr`s. 
+![fansi.Attr](docs/Attr.png)
+
+- `fansi.Attrs` represents a group of zero or more `fansi.Attr`s. 
   These that can be passed around together, combined via `++` or applied 
   to `fansi.Str`s all at once. Any individual `fansi.Attr` can be used 
   when `fansi.Attrs` is required, as can `fansi.Attrs.empty`. 
-  
+
+![fansi.Attrs](docs/Attrs.png)
+
 - Using any of the `fansi.Attr` or `fansi.Attrs` mentioned above, e.g. 
   `fansi.Color.Red`, using `fansi.Color.Red("hello world ansi!")` to create a 
   `fansi.Str` with that text and color, or 
