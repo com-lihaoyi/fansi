@@ -172,7 +172,7 @@ The main operations you need to know are:
   you're doing and want to perform operations that are inconvenient or slow 
   to do through `fansi.Str`'s immutable API.
    
-`fansi.Str` currently has a relatively skelatal API: it is slightly smaller
+`fansi.Str` currently has a relatively skeletal API: it is slightly smaller
 than what `java.lang.String` has, and definitely much less than what is 
 available on `scala.RichString`'s extension methods. Feel free to implement
 your own custom operations using `fromArrays` if you can't find what you want
