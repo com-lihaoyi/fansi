@@ -35,15 +35,15 @@ val length = ???
 // How to make the word `World` blue, while preserving the coloring of the 
 // `Ansi!` text after? What if the string came from somewhere else and you 
 // don't know what color that text was originally?
-val coloredBlueWorld = ??? 
+val blueWorld = ??? 
 
 // What if I want to underline "World" instead of changing it's color, while
 // still preserving the original color?
 val underlinedWorld = ???
 
-println(colored)
-println(coloredBlueWorld)
-println(underlinedWorld)
+// What if I want to apply underlines to "World" and the two characters on 
+// either side, after I had already turned "World" blue?
+val underlinedBlue = ???
 ```
 
 While simple to describe, these tasks are all error-prone and difficult to
@@ -57,13 +57,16 @@ val colored: fansi.Str = fansi.Color.Red("Hello World Ansi!")
 
 val length = colored.length // Fast and returns the non-colored length of string
 
-val coloredBlueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
+val blueWorld = colored.overlay(fansi.Color.Blue, 6, 11)
 
 val underlinedWorld = colored.overlay(fansi.Underlined.On, 6, 11)
-println(colored.render)
-println(coloredBlueWorld.render)
-println(underlinedWorld.render)
+
+val underlinedBlue = blueWorld.overlay(fansi.Underlined.On, 4, 13)
 ```
+
+And it just works:
+
+![Landing ](docs/landingPage.png)
 
 Why Fansi?
 ----------
