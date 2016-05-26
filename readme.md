@@ -47,7 +47,10 @@ val underlinedBlue = ???
 ```
 
 While simple to describe, these tasks are all error-prone and difficult to
-do using normal `java.lang.String`s containing Ansi color codes.
+do using normal `java.lang.String`s containing Ansi color codes. This is 
+especially so if, unlike the toy example above, `colored` is coming from some
+other part of your program and you're not sure what or how-many Ansi color 
+codes it already contains. 
 
 With Fansi, doing all these tasks is simple, error-proof and efficient:
 
@@ -93,8 +96,16 @@ manner:
   leaking colors.
 
 These are tasks which are possible to do with normal `java.lang.String`,
-but are tedious, error-prone and typically inefficient. `fansi.Str`
-allows you to perform these tasks safely and easily.
+but are tedious, error-prone and typically inefficient. Often, you can get
+by with adding copious amounts of `Console.RESET`s when working with colored
+`java.lang.String`s, but even that easily results in errors when you `RESET`
+too much and stomp over colors that already exist:
+
+![StringError](docs/StringError.png)
+
+`fansi.Str` allows you to perform these tasks safely and easily:
+ 
+ ![FansiRocks](docs/FansiRocks.png)
 
 Fansi was originally a part of the [Ammonite REPL](http://www.lihaoyi.com/Ammonite/),
 but is now a standalone zero-dependency library anyone can use if they want
