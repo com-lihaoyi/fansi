@@ -111,9 +111,9 @@ object FansiTests extends TestSuite{
           assert(overlayed == expected)
         }
         'overshoot{
-          val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 5, 10).render.toVector
-          val expected = s"$UND#$DUND    $UND$REV#$DUND$DREV".toVector
-          assert(overlayed == expected)
+          intercept[IllegalArgumentException]{
+            fansi.Str(resetty).overlay(fansi.Reversed.On, 5, 10)
+          }
         }
         'empty{
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 0, 0).render
@@ -126,6 +126,18 @@ object FansiTests extends TestSuite{
           assert(overlayed == expected)
 
         }
+      }
+      'overallAll{
+        //s"+++$R---$G***$B///"
+        val overlayed = fansi.Str(rgbOps).overlayAll(Seq(
+          (fansi.Color.Yellow, 4, 7),
+          (fansi.Underlined.On, 4, 7),
+          (fansi.Underlined.Off, 5, 6),
+          (fansi.Color.Blue, 7, 9)
+        )).render
+        val expected = s"+++$R-$Y$UND-$DUND-$UND*$B$DUND**///$DCOL"
+        assert(overlayed == expected)
+        overlayed
       }
     }
     'attributes{
@@ -251,89 +263,89 @@ object FansiTests extends TestSuite{
         )
       }
     }
-//    'perf{
-//      val input = s"+++$R---$G***$B///" * 1000
-//
-//      'parsing{
-//
-//        val start = System.currentTimeMillis()
-//        var count = 0
-//        while(System.currentTimeMillis() < start + 5000){
-//          count += 1
-//          fansi.Str(input)
-//        }
-//        val end = System.currentTimeMillis()
-//        count
-//      }
-//      'rendering{
-//
-//        val start = System.currentTimeMillis()
-//        var count = 0
-//        val parsed = fansi.Str(input)
-//        while(System.currentTimeMillis() < start + 5000){
-//          count += 1
-//          parsed.render
-//        }
-//        val end = System.currentTimeMillis()
-//        count
-//      }
-//      'concat{
-//        val start = System.currentTimeMillis()
-//        var count = 0
-//        val fansiStr = fansi.Str(input)
-//        while(System.currentTimeMillis() < start + 5000){
-//          count += 1
-//          fansiStr ++ fansiStr
-//        }
-//        val end = System.currentTimeMillis()
-//        count
-//      }
-//      'splitAt{
-//        val start = System.currentTimeMillis()
-//        var count = 0
-//        val fansiStr = fansi.Str(input)
-//        while(System.currentTimeMillis() < start + 5000){
-//          count += 1
-//          fansiStr.splitAt(count % fansiStr.length)
-//        }
-//        val end = System.currentTimeMillis()
-//        count
-//      }
-//      'substring{
-//        val start = System.currentTimeMillis()
-//        var count = 0
-//        val fansiStr = fansi.Str(input)
-//        while(System.currentTimeMillis() < start + 5000){
-//          count += 1
-//          val start = count % fansiStr.length
-//          val end = count % (fansiStr.length - start) + start
-//          fansiStr.substring(start, end)
-//        }
-//        val end = System.currentTimeMillis()
-//        count
-//      }
-//      'overlay{
-//        val start = System.currentTimeMillis()
-//        var count = 0
-//        val fansiStr = fansi.Str(input)
-//        val attrs =
-//          fansi.Color.Red ++
-//          fansi.Color.Blue ++
-//          fansi.Bold.On ++
-//          fansi.Reversed.On ++
-//          fansi.Bold.Off ++
-//          fansi.Underlined.On
-//
-//        while(System.currentTimeMillis() < start + 5000){
-//          count += 1
-//          val start = count % fansiStr.length
-//          val end = count % (fansiStr.length - start) + start
-//          fansiStr.overlay(attrs, start, end)
-//        }
-//        val end = System.currentTimeMillis()
-//        count
-//      }
-//    }
+    'perf{
+      val input = s"+++$R---$G***$B///" * 1000
+
+      'parsing{
+
+        val start = System.currentTimeMillis()
+        var count = 0
+        while(System.currentTimeMillis() < start + 5000){
+          count += 1
+          fansi.Str(input)
+        }
+        val end = System.currentTimeMillis()
+        count
+      }
+      'rendering{
+
+        val start = System.currentTimeMillis()
+        var count = 0
+        val parsed = fansi.Str(input)
+        while(System.currentTimeMillis() < start + 5000){
+          count += 1
+          parsed.render
+        }
+        val end = System.currentTimeMillis()
+        count
+      }
+      'concat{
+        val start = System.currentTimeMillis()
+        var count = 0
+        val fansiStr = fansi.Str(input)
+        while(System.currentTimeMillis() < start + 5000){
+          count += 1
+          fansiStr ++ fansiStr
+        }
+        val end = System.currentTimeMillis()
+        count
+      }
+      'splitAt{
+        val start = System.currentTimeMillis()
+        var count = 0
+        val fansiStr = fansi.Str(input)
+        while(System.currentTimeMillis() < start + 5000){
+          count += 1
+          fansiStr.splitAt(count % fansiStr.length)
+        }
+        val end = System.currentTimeMillis()
+        count
+      }
+      'substring{
+        val start = System.currentTimeMillis()
+        var count = 0
+        val fansiStr = fansi.Str(input)
+        while(System.currentTimeMillis() < start + 5000){
+          count += 1
+          val start = count % fansiStr.length
+          val end = count % (fansiStr.length - start) + start
+          fansiStr.substring(start, end)
+        }
+        val end = System.currentTimeMillis()
+        count
+      }
+      'overlay{
+        val start = System.currentTimeMillis()
+        var count = 0
+        val fansiStr = fansi.Str(input)
+        val attrs =
+          fansi.Color.Red ++
+          fansi.Color.Blue ++
+          fansi.Bold.On ++
+          fansi.Reversed.On ++
+          fansi.Bold.Off ++
+          fansi.Underlined.On
+
+        while(System.currentTimeMillis() < start + 5000){
+          count += 1
+          val start = count % fansiStr.length
+          val end = count % (fansiStr.length - start) + start
+          fansiStr.overlay(attrs, start, end)
+        }
+        val end = System.currentTimeMillis()
+        count
+      }
+    }
   }
 }
 

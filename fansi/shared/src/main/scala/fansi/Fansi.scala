@@ -122,6 +122,10 @@ case class Str private(private val chars: Array[Char], private val colors: Array
 
 
     var currentState: Str.State = 0
+
+    // Make a local array copy of the immutable Vector, for maximum performance
+    // since the Vector is small and we'll be looking it up over & over & over
+    val categoryArray = Attr.categories.toArray
     /**
       * Emit the ansi escapes necessary to transition
       * between two states, if necessary.
@@ -138,10 +142,10 @@ case class Str private(private val chars: Array[Char], private val colors: Array
       }
 
       var categoryIndex = 0
-      while(categoryIndex < Attr.categories.length){
-        val cat = Attr.categories(categoryIndex)
+      while(categoryIndex < categoryArray.length){
+        val cat = categoryArray(categoryIndex)
         if ((cat.mask & currentState) != (cat.mask & nextState)){
-          val attr = cat.bitsMap(nextState & cat.mask)
+          val attr = cat.lookupAttr(nextState & cat.mask)
 
           if (attr.escapeOpt.isDefined) {
             output.append(attr.escapeOpt.get)
@@ -154,8 +158,12 @@ case class Str private(private val chars: Array[Char], private val colors: Array
     var i = 0
     while(i < colors.length){
       // Emit ANSI escapes to change colors where necessary
-      emitDiff(colors(i))
-      currentState = colors(i)
+      // fast-path optimization to check for integer equality first before
+      // going through the whole `enableDiff` rigmarole
+      if (colors(i) != currentState) {
+        emitDiff(colors(i))
+        currentState = colors(i)
+      }
       output.append(chars(i))
       i += 1
     }
@@ -173,15 +181,36 @@ case class Str private(private val chars: Array[Char], private val colors: Array
     * Overlays the desired color over the specified range of the [[fansi.Str]].
     */
   def overlay(attrs: Attrs, start: Int = 0, end: Int = length) = {
-    require(end >= start,
-      s"end:$end must be greater than start:$end in fansiStr#overlay call"
-    )
-    val colorsOut = new Array[Int](colors.length)
-    var i = 0
-    while(i < colors.length){
-      if (i >= start && i < end) colorsOut(i) = attrs.transform(colors(i))
-      else colorsOut(i) = colors(i)
-      i += 1
+    overlayAll(Seq((attrs, start, end)))
+  }
+
+  /**
+    * Batch version of [[overlay]], letting you apply a bunch of [[Attrs]] onto
+    * various parts of the same string in one operation, avoiding the unnecessary
+    * copying that would happen if you applied them with [[overlay]] one by one.
+    *
+    * The input sequence of overlay-tuples is applied from left to right
+    */
+  def overlayAll(overlays: Seq[(Attrs, Int, Int)]) = {
+    val colorsOut = colors.clone()
+    for((attrs, start, end) <- overlays){
+      require(
+        end >= start,
+        s"end:$end must be greater than start:$end in fansiStr#overlay call"
+      )
+      require(start >= 0, s"start:$start must be greater than or equal to 0")
+      require(
+        end <= colors.length,
+        s"end:$end must be less than or equal to colors.length:$colors.length"
+      )
+
+      {
+        var i = start
+        while (i < end) {
+          colorsOut(i) = attrs.transform(colorsOut(i))
+          i += 1
+        }
+      }
     }
     new Str(chars, colorsOut)
   }
@@ -455,10 +484,19 @@ case class ResetAttr private[fansi](resetMask: Int, applyMask: Int)
   * Represents a set of [[fansi.Attr]]s all occupying the same bit-space
   * in the state `Int`
   */
-sealed abstract class Category(offset: Int, width: Int)(implicit catName: sourcecode.Name){
+sealed abstract class Category(val offset: Int, val width: Int)(implicit catName: sourcecode.Name){
   def mask = ((1 << width) - 1) << offset
   val all: Seq[Attr]
-  lazy val bitsMap = all.map{ m => m.applyMask -> m}.toMap
+
+  def lookupAttr(applyState: Int) = lookupAttrTable(applyState >> offset)
+  // Allows fast lookup of categories based on the desired applyState
+  private[this] lazy val lookupAttrTable = {
+    val arr = new Array[Attr](1 << width)
+    for(attr <- all){
+      arr(attr.applyMask >> offset) = attr
+    }
+    arr
+  }
   def makeAttr(s: String, applyValue: Int)(implicit name: sourcecode.Name) = {
     new EscapeAttr(s, mask, applyValue << offset)(catName.value + "." + name.value)
   }

@@ -5,7 +5,7 @@ lazy val fansi = crossProject
     scalaVersion := "2.11.8",
     organization := "com.lihaoyi",
     name := "fansi",
-    version := "0.1.0",
+    version := "0.1.1",
     scalacOptions += "-target:jvm-1.7",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "utest" % "0.4.3" % "test",
