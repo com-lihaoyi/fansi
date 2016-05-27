@@ -448,6 +448,28 @@ use <code>.plainText</code>
       </a>
     </span>
       <p class="shortcomment cmt">Overlays the desired color over the specified range of the <a href="" class="extype" name="fansi.Str">fansi.Str</a>.</p>
+    </li><li name="fansi.Str#overlayAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="overlayAll(overlays:Seq[(fansi.Attrs,Int,Int)]):fansi.Str"></a>
+      <a id="overlayAll(Seq[(Attrs,Int,Int)]):Str"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">overlayAll</span><span class="params">(<span name="overlays">overlays: <span class="extype" name="scala.Seq">Seq</span>[(<a href="Attrs.html" class="extype" name="fansi.Attrs">Attrs</a>, <span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Int">Int</span>)]</span>)</span><span class="result">: <a href="" class="extype" name="fansi.Str">Str</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fansi.Str@overlayAll(overlays:Seq[(fansi.Attrs,Int,Int)]):fansi.Str" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Batch version of <a href="#overlay(attrs:fansi.Attrs,start:Int,end:Int):fansi.Str" class="extmbr" name="fansi.Str#overlay">overlay</a>, letting you apply a bunch of <a href="Attrs.html" class="extype" name="fansi.Attrs">Attrs</a> onto
+various parts of the same string in one operation, avoiding the unnecessary
+copying that would happen if you applied them with <a href="#overlay(attrs:fansi.Attrs,start:Int,end:Int):fansi.Str" class="extmbr" name="fansi.Str#overlay">overlay</a> one by one.</p><div class="fullcomment"><div class="comment cmt"><p>Batch version of <a href="#overlay(attrs:fansi.Attrs,start:Int,end:Int):fansi.Str" class="extmbr" name="fansi.Str#overlay">overlay</a>, letting you apply a bunch of <a href="Attrs.html" class="extype" name="fansi.Attrs">Attrs</a> onto
+various parts of the same string in one operation, avoiding the unnecessary
+copying that would happen if you applied them with <a href="#overlay(attrs:fansi.Attrs,start:Int,end:Int):fansi.Str" class="extmbr" name="fansi.Str#overlay">overlay</a> one by one.</p><p>The input sequence of overlay-tuples is applied from left to right
+</p></div></div>
     </li><li name="fansi.Str#plainText" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="plainText:String"></a>
       <a id="plainText:String"></a>
