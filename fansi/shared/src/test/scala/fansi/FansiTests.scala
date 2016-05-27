@@ -265,6 +265,18 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
+//      'rendering{
+//
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val parsed = fansi.Str(input)
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          parsed.render
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
 //      'concat{
 //        val start = System.currentTimeMillis()
 //        var count = 0
