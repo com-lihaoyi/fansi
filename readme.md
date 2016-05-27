@@ -5,6 +5,8 @@ Fansi 0.1.0 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
 [Build Status]: https://travis-ci.org/lihaoyi/fansi.svg
 [travis-url]: https://travis-ci.org/lihaoyi/fansi
 
+![LandingExample](docs/LandingExample.png)
+
 ```scala
 "com.lihaoyi" %% "fansi" % "0.1.0"
 "com.lihaoyi" %%% "fansi" % "0.1.0" // Scala.js
