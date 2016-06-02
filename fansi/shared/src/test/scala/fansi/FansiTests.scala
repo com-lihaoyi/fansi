@@ -170,7 +170,7 @@ object FansiTests extends TestSuite{
     'colors - tabulate(fansi.Color.all)
     'backgrounds - tabulate(fansi.Back.all)
     'negative{
-      'parse{
+      'errorMode{
         // Make sure that fansi.Str throws on most common non-color
         // fansi terminal commands
         //
@@ -178,8 +178,19 @@ object FansiTests extends TestSuite{
         // https://en.wikipedia.org/wiki/ANSI_escape_code#Non-CSI_codes
 
         def check(s: String, msg: String) ={
-          intercept[IllegalArgumentException]{ fansi.Str(s, strict = true) }
-  //        assert(ex.getMessage.contains(msg))
+          // If I ask it to throw, it throws
+          val thrownError = intercept[IllegalArgumentException]{
+            fansi.Str(s, errorMode = fansi.ErrorMode.Throw)
+          }
+          assert(thrownError.getMessage.contains(msg))
+          // If I ask it to sanitize, the escape character is gone but the
+          // rest of each escape sequence remains
+          val sanitized = fansi.Str(s, errorMode = fansi.ErrorMode.Sanitize)
+          assert(sanitized.plainText == ("Hello" + msg + "World"))
+
+          // If I ask it to strip, everything is gone
+          val stripped = fansi.Str(s, errorMode = fansi.ErrorMode.Strip)
+          assert(stripped.plainText == "HelloWorld")
         }
 
         'cursorUp - check("Hello\u001b[2AWorld", "[2A")
@@ -188,8 +199,8 @@ object FansiTests extends TestSuite{
         'cursorBack - check("Hello\u001b[2DWorld", "[2D")
         'cursorNextLine - check("Hello\u001b[2EWorld", "[2E")
         'cursorPrevLine - check("Hello\u001b[2FWorld", "[2F")
-        'cursorHorizontalAbs - check("Hello\u001b[2GmWorld", "[2G")
-        'cursorPosition- check("Hello\u001b[2;2HmWorld", "[2;2H")
+        'cursorHorizontalAbs - check("Hello\u001b[2GWorld", "[2G")
+        'cursorPosition- check("Hello\u001b[2;2HWorld", "[2;2H")
         'eraseDisplay - check("Hello\u001b[2JWorld", "[2J")
         'eraseLine - check("Hello\u001b[2KWorld", "[2K")
         'scrollUp - check("Hello\u001b[2SWorld", "[2S")
@@ -198,10 +209,9 @@ object FansiTests extends TestSuite{
         'selectGraphicRendition - check("Hello\u001b[2mWorld", "[2m")
         'auxPortOn - check("Hello\u001b[5iWorld", "[5i")
         'auxPortOff - check("Hello\u001b[4iWorld", "[4i")
-        'deviceStatusReport - check("Hello\u001b[6n", "[6n")
-        'saveCursor - check("Hello\u001b[s", "[s")
-        'restoreCursor - check("Hello\u001b[u", "[u")
-
+        'deviceStatusReport - check("Hello\u001b[6nWorld", "[6n")
+        'saveCursor - check("Hello\u001b[sWorld", "[s")
+        'restoreCursor - check("Hello\u001b[uWorld", "[u")
       }
       'outOfBounds{
         intercept[IllegalArgumentException]{ fansi.Str("foo").splitAt(10) }
@@ -263,89 +273,89 @@ object FansiTests extends TestSuite{
         )
       }
     }
-    'perf{
-      val input = s"+++$R---$G***$B///" * 1000
-
-      'parsing{
-
-        val start = System.currentTimeMillis()
-        var count = 0
-        while(System.currentTimeMillis() < start + 5000){
-          count += 1
-          fansi.Str(input)
-        }
-        val end = System.currentTimeMillis()
-        count
-      }
-      'rendering{
-
-        val start = System.currentTimeMillis()
-        var count = 0
-        val parsed = fansi.Str(input)
-        while(System.currentTimeMillis() < start + 5000){
-          count += 1
-          parsed.render
-        }
-        val end = System.currentTimeMillis()
-        count
-      }
-      'concat{
-        val start = System.currentTimeMillis()
-        var count = 0
-        val fansiStr = fansi.Str(input)
-        while(System.currentTimeMillis() < start + 5000){
-          count += 1
-          fansiStr ++ fansiStr
-        }
-        val end = System.currentTimeMillis()
-        count
-      }
-      'splitAt{
-        val start = System.currentTimeMillis()
-        var count = 0
-        val fansiStr = fansi.Str(input)
-        while(System.currentTimeMillis() < start + 5000){
-          count += 1
-          fansiStr.splitAt(count % fansiStr.length)
-        }
-        val end = System.currentTimeMillis()
-        count
-      }
-      'substring{
-        val start = System.currentTimeMillis()
-        var count = 0
-        val fansiStr = fansi.Str(input)
-        while(System.currentTimeMillis() < start + 5000){
-          count += 1
-          val start = count % fansiStr.length
-          val end = count % (fansiStr.length - start) + start
-          fansiStr.substring(start, end)
-        }
-        val end = System.currentTimeMillis()
-        count
-      }
-      'overlay{
-        val start = System.currentTimeMillis()
-        var count = 0
-        val fansiStr = fansi.Str(input)
-        val attrs =
-          fansi.Color.Red ++
-          fansi.Color.Blue ++
-          fansi.Bold.On ++
-          fansi.Reversed.On ++
-          fansi.Bold.Off ++
-          fansi.Underlined.On
-
-        while(System.currentTimeMillis() < start + 5000){
-          count += 1
-          val start = count % fansiStr.length
-          val end = count % (fansiStr.length - start) + start
-          fansiStr.overlay(attrs, start, end)
-        }
-        val end = System.currentTimeMillis()
-        count
-      }
-    }
+//    'perf{
+//      val input = s"+++$R---$G***$B///" * 1000
+//
+//      'parsing{
+//
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          fansi.Str(input)
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'rendering{
+//
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val parsed = fansi.Str(input)
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          parsed.render
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'concat{
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val fansiStr = fansi.Str(input)
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          fansiStr ++ fansiStr
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'splitAt{
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val fansiStr = fansi.Str(input)
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          fansiStr.splitAt(count % fansiStr.length)
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'substring{
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val fansiStr = fansi.Str(input)
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          val start = count % fansiStr.length
+//          val end = count % (fansiStr.length - start) + start
+//          fansiStr.substring(start, end)
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//      'overlay{
+//        val start = System.currentTimeMillis()
+//        var count = 0
+//        val fansiStr = fansi.Str(input)
+//        val attrs =
+//          fansi.Color.Red ++
+//          fansi.Color.Blue ++
+//          fansi.Bold.On ++
+//          fansi.Reversed.On ++
+//          fansi.Bold.Off ++
+//          fansi.Underlined.On
+//
+//        while(System.currentTimeMillis() < start + 5000){
+//          count += 1
+//          val start = count % fansiStr.length
+//          val end = count % (fansiStr.length - start) + start
+//          fansiStr.overlay(attrs, start, end)
+//        }
+//        val end = System.currentTimeMillis()
+//        count
+//      }
+//    }
   }
 }
 

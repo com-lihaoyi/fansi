@@ -216,6 +216,58 @@ case class Str private(private val chars: Array[Char], private val colors: Array
   }
 }
 
+/**
+  * Used to control what kind of behavior you get if the a `CharSequence` you
+  * are trying to parse into a [[fansi.Str]] contains an Ansi escape not
+  * recognized by Fansi as a valid color.
+  */
+sealed trait ErrorMode{
+  /**
+    * Given an unknown Ansi escape was found at `sourceIndex` inside your
+    * `raw: CharSequence`, what index should you resume parsing at?
+    */
+  def handle(sourceIndex: Int, raw: CharSequence): Int
+}
+object ErrorMode{
+  /**
+    * Throw an exception and abort the parse
+    */
+  case object Throw extends ErrorMode{
+    def handle(sourceIndex: Int, raw: CharSequence) = {
+      val matcher = Str.ansiRegex.matcher(raw)
+      matcher.find(sourceIndex)
+      val detail = raw.subSequence(sourceIndex + 1, matcher.end())
+
+      // Fail fast and complain about the unknown ansi-escape
+      throw new IllegalArgumentException(
+        s"Unknown ansi-escape $detail at index $sourceIndex " +
+          "inside string cannot be parsed into an fansi.Str"
+      )
+    }
+  }
+  /**
+    * Skip the `\u001b` that kicks off the unknown Ansi escape but leave
+    * subsequent characters in place, so the end-user can see that an Ansi
+    * escape was entered e.g. via the [A[B[A[C that appears in the result
+    */
+  case object Sanitize extends ErrorMode{
+    def handle(sourceIndex: Int, raw: CharSequence) = {
+      sourceIndex + 1
+    }
+  }
+
+  /**
+    * Find the end of the unknown Ansi escape and skip over it's characters
+    * entirely, so no trace of them appear in the parsed fansi.Str.
+    */
+  case object Strip extends ErrorMode{
+    def handle(sourceIndex: Int, raw: CharSequence) = {
+      val matcher = Str.ansiRegex.matcher(raw)
+      matcher.find(sourceIndex)
+      matcher.end()
+    }
+  }
+}
 object Str{
 
   /**
@@ -244,6 +296,21 @@ object Str{
   implicit def implicitApply(raw: CharSequence): fansi.Str = apply(raw)
 
   /**
+    * Regex that can be used to identify Ansi escape patterns in a string.
+    *
+    *
+    *
+    * Found from: http://stackoverflow.com/a/33925425/871202
+    *
+    * Which references:
+    *
+    * http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-048.pdf
+    *
+    * Section 5.4: Control Sequences
+    */
+  val ansiRegex = "(\u009b|\u001b\\[)[0-?]*[ -\\/]*[@-~]".r.pattern
+
+  /**
     * Creates an [[fansi.Str]] from a non-fansi `java.lang.String` or other
     * `CharSequence`.
     *
@@ -251,10 +318,11 @@ object Str{
     * `java.lang.String` anywhere an `fansi.Str` is required and it will be
     * automatically parsed and converted for you.
     *
-    * @param strict throw an exception if an unrecognized fansi sequence exists.
-    *               Off by default
+    * @param errorMode Used to control what kind of behavior you get if the
+    *                  input `CharSequence` contains an Ansi escape not
+    *                  recognized by Fansi as a valid color.
     */
-  def apply(raw: CharSequence, strict: Boolean = false): fansi.Str = {
+  def apply(raw: CharSequence, errorMode: ErrorMode = ErrorMode.Throw): fansi.Str = {
     // Pre-allocate some arrays for us to fill up. They will probably be
     // too big if the input has any ansi codes at all but that's ok, we'll
     // trim them later.
@@ -273,15 +341,8 @@ object Str{
             currentColor = tuple._2.transform(currentColor)
             sourceIndex += tuple._1
           case None =>
-            if (strict) {
-              // If we found the start of an escape code that was missed by our
-              // regex, also bail out and just report the index since that's all we
-              // know about it
-              throw new IllegalArgumentException(
-                s"Unknown fansi-escape at index $sourceIndex inside string cannot be " +
-                  "parsed into an fansi.Str"
-              )
-            }
+            sourceIndex = errorMode.handle(sourceIndex, raw)
+
         }
       }else {
         colors(destIndex) = currentColor

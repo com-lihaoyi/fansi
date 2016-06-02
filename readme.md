@@ -13,7 +13,7 @@ Fansi 0.1.1 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
 ```
 
 Fansi is a Scala library to make it easy to deal with fancy colored Ansi 
-strings within your command-line programs. 
+strings within your command-line programs.
 
 While "normal" use of Ansi escapes with `java.lang.String`, you find yourself 
 concatenating colors:
@@ -181,13 +181,30 @@ your own custom operations using `fromArrays` if you can't find what you want
 on `fansi.Str`, or send a patch if you think it's arguably general enough to
 be included in Fansi itself.
 
+You can also pass in an `errorMode` when parsing a string via `ansi.Str(...)`
+to tell Fansi how to behave if it finds Ansi escapes it can't handle. You
+have the options:
+
+- `fansi.ErrorMode.Throw` to throw an exception and fail the parse
+- `fansi.ErrorMode.Sanitize` to remove the escape character but leave the
+  remnants of the escape-sequence in the result that people can see
+- `fansi.ErrorMode.Strip` to remove those escape sequences entirely so that
+  no trace of them remains in the final result
+
 Scaladoc
 --------
 
-- [0.1.1](http://lihaoyi.github.io/fansi/)
+- [0.1.2](http://lihaoyi.github.io/fansi/)
 
 Changelog
 ---------
+
+### 0.1.2
+
+- Removed infinite-loop if parsing strings with Ansi escapes that are not 
+  recognized by Fansi
+- Added `fansi.ErrorMode` parameter, to control behavior when un-recognized 
+  Ansi escapes are found.
 
 ### 0.1.1
 
