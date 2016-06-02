@@ -176,19 +176,37 @@ to a <a href="Category.html" class="extype" name="fansi.Category">Category</a> t
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="fansi.Str#ansiRegex" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ansiRegex:java.util.regex.Pattern"></a>
+      <a id="ansiRegex:Pattern"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ansiRegex</span><span class="result">: <span class="extype" name="java.util.regex.Pattern">Pattern</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fansi.Str$@ansiRegex:java.util.regex.Pattern" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Regex that can be used to identify Ansi escape patterns in a string.</p><div class="fullcomment"><div class="comment cmt"><p>Regex that can be used to identify Ansi escape patterns in a string.</p><p>Found from: http://stackoverflow.com/a/33925425/871202</p><p>Which references:</p><p>http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-048.pdf</p><p>Section 5.4: Control Sequences
+</p></div></div>
     </li><li name="fansi.Str#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="apply(raw:CharSequence,strict:Boolean):fansi.Str"></a>
-      <a id="apply(CharSequence,Boolean):Str"></a>
+      <a id="apply(raw:CharSequence,errorMode:fansi.ErrorMode):fansi.Str"></a>
+      <a id="apply(CharSequence,ErrorMode):Str"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="raw">raw: <span class="extype" name="java.lang.CharSequence">CharSequence</span></span>, <span name="strict">strict: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <a href="Str.html" class="extype" name="fansi.Str">Str</a></span>
+        <span class="name">apply</span><span class="params">(<span name="raw">raw: <span class="extype" name="java.lang.CharSequence">CharSequence</span></span>, <span name="errorMode">errorMode: <a href="ErrorMode.html" class="extype" name="fansi.ErrorMode">ErrorMode</a> = <span class="symbol"><span class="name"><a href="ErrorMode$.html">ErrorMode.Throw</a></span></span></span>)</span><span class="result">: <a href="Str.html" class="extype" name="fansi.Str">Str</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Str$@apply(raw:CharSequence,strict:Boolean):fansi.Str" title="Permalink" target="_top">
+      <a href="../index.html#fansi.Str$@apply(raw:CharSequence,errorMode:fansi.ErrorMode):fansi.Str" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -197,8 +215,9 @@ to a <a href="Category.html" class="extype" name="fansi.Category">Category</a> t
 <code>CharSequence</code>.</p><p>Note that this method is implicit, meaning you can pass in a
 <code>java.lang.String</code> anywhere an <code>fansi.Str</code> is required and it will be
 automatically parsed and converted for you.
-</p></div><dl class="paramcmts block"><dt class="param">strict</dt><dd class="cmt"><p>throw an exception if an unrecognized fansi sequence exists.
-              Off by default</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">errorMode</dt><dd class="cmt"><p>Used to control what kind of behavior you get if the
+                 input <code>CharSequence</code> contains an Ansi escape not
+                 recognized by Fansi as a valid color.</p></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
