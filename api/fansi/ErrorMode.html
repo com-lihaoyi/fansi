@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>Attr - fansi.Attr</title>
-          <meta name="description" content="Attr - fansi.Attr" />
-          <meta name="keywords" content="Attr fansi.Attr" />
+          <title>ErrorMode - fansi.ErrorMode</title>
+          <meta name="description" content="ErrorMode - fansi.ErrorMode" />
+          <meta name="keywords" content="ErrorMode fansi.ErrorMode" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
-            var hash = 'fansi.Attr$';
+            var hash = 'fansi.ErrorMode';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -26,16 +26,16 @@
    	  </script>
     
         </head>
-        <body class="value">
+        <body class="type">
       <div id="definition">
-        <a href="Attr.html" title="See companion trait"><img alt="Object/Trait" src="../lib/object_to_trait_big.png" /></a>
+        <a href="ErrorMode$.html" title="See companion object"><img alt="Trait/Object" src="../lib/trait_to_object_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="fansi">fansi</a></p>
-        <h1><a href="Attr.html" title="See companion trait">Attr</a></h1><h3><span class="morelinks"><div>
+        <h1><a href="ErrorMode$.html" title="See companion object">ErrorMode</a></h1><h3><span class="morelinks"><div>
             Related Docs:
-            <a href="Attr.html" title="See companion trait">trait Attr</a>
+            <a href="ErrorMode$.html" title="See companion object">object ErrorMode</a>
             | <a href="package.html" class="extype" name="fansi">package fansi</a>
           </div></span></h3><span class="permalink">
-      <a href="../index.html#fansi.Attr$" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -43,18 +43,24 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
+        <span class="modifier">sealed </span>
+        <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">Attr</span>
+        <span class="name">ErrorMode</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Used to control what kind of behavior you get if the a <code>CharSequence</code> you
+are trying to parse into a <a href="Str.html" class="extype" name="fansi.Str">fansi.Str</a> contains an Ansi escape not
+recognized by Fansi as a valid color.
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div></div>
+        </div><div class="toggleContainer block">
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="ErrorMode$$Sanitize$.html" class="extype" name="fansi.ErrorMode.Sanitize">Sanitize</a>, <a href="ErrorMode$$Strip$.html" class="extype" name="fansi.ErrorMode.Strip">Strip</a>, <a href="ErrorMode$$Throw$.html" class="extype" name="fansi.ErrorMode.Throw">Throw</a></div>
+          </div></div>
         
 
       <div id="mbrsel">
@@ -71,7 +77,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="fansi.Attr"><span>Attr</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="fansi.ErrorMode"><span>ErrorMode</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -92,10 +98,32 @@
 
         
 
-        
+        <div id="values" class="values members">
+              <h3>Abstract Value Members</h3>
+              <ol><li name="fansi.ErrorMode#handle" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="handle(sourceIndex:Int,raw:CharSequence):Int"></a>
+      <a id="handle(Int,CharSequence):Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">handle</span><span class="params">(<span name="sourceIndex">sourceIndex: <span class="extype" name="scala.Int">Int</span></span>, <span name="raw">raw: <span class="extype" name="java.lang.CharSequence">CharSequence</span></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fansi.ErrorMode@handle(sourceIndex:Int,raw:CharSequence):Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Given an unknown Ansi escape was found at <code>sourceIndex</code> inside your
+<code>raw: CharSequence</code>, what index should you resume parsing at?
+</p>
+    </li></ol>
+            </div>
 
         <div id="values" class="values members">
-              <h3>Value Members</h3>
+              <h3>Concrete Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
@@ -108,7 +136,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -125,7 +153,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@##():Int" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@##():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -142,30 +170,11 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="fansi.Attr#Reset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Reset:fansi.EscapeAttr"></a>
-      <a id="Reset:EscapeAttr"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Reset</span><span class="result">: <a href="EscapeAttr.html" class="extype" name="fansi.EscapeAttr">EscapeAttr</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@Reset:fansi.EscapeAttr" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Represents the removal of all ansi text decoration.</p><div class="fullcomment"><div class="comment cmt"><p>Represents the removal of all ansi text decoration. Doesn't fit into any
-convenient category, since it applies to them all.
-</p></div></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -178,29 +187,11 @@ convenient category, since it applies to them all.
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="fansi.Attr#categories" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="categories:scala.collection.immutable.Vector[fansi.Category{valall:Seq[fansi.AttrwithProductwithSerializable]}]"></a>
-      <a id="categories:Vector[Category{valall:Seq[fansi.AttrwithProductwithSerializable]}]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">categories</span><span class="result">: <span class="extype" name="scala.collection.immutable.Vector">Vector</span>[<a href="Category.html" class="extype" name="fansi.Category">Category</a> { val all: Seq[fansi.Attr with Product with Serializable] }]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@categories:scala.collection.immutable.Vector[fansi.Category{valall:Seq[fansi.AttrwithProductwithSerializable]}]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">A list of possible categories
-</p>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -213,7 +204,7 @@ convenient category, since it applies to them all.
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@clone():Object" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@clone():Object" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -236,7 +227,7 @@ convenient category, since it applies to them all.
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -253,7 +244,7 @@ convenient category, since it applies to them all.
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -270,7 +261,7 @@ convenient category, since it applies to them all.
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@finalize():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@finalize():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -293,7 +284,7 @@ convenient category, since it applies to them all.
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -310,7 +301,7 @@ convenient category, since it applies to them all.
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@hashCode():Int" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@hashCode():Int" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -327,7 +318,7 @@ convenient category, since it applies to them all.
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -344,7 +335,7 @@ convenient category, since it applies to them all.
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -361,7 +352,7 @@ convenient category, since it applies to them all.
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@notify():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@notify():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -378,7 +369,7 @@ convenient category, since it applies to them all.
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -395,7 +386,7 @@ convenient category, since it applies to them all.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -412,7 +403,7 @@ convenient category, since it applies to them all.
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@toString():String" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@toString():String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -429,7 +420,7 @@ convenient category, since it applies to them all.
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@wait():Unit" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@wait():Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -452,7 +443,7 @@ convenient category, since it applies to them all.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -475,7 +466,7 @@ convenient category, since it applies to them all.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Attr$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../index.html#fansi.ErrorMode@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
