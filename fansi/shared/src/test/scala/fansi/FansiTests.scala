@@ -72,6 +72,15 @@ object FansiTests extends TestSuite{
     'substring{
       val substringed = fansi.Str(rgbOps).substring(4, 9).render
       assert(substringed == s"$R--$G***$RTC")
+
+      val default = fansi.Str(rgbOps).render
+
+      val noOpSubstringed1 = fansi.Str(rgbOps).substring().render
+      assert(noOpSubstringed1 == default)
+
+      val parsed = fansi.Str(rgbOps)
+      val noOpSubstringed2 = parsed.substring(0, parsed.length).render
+      assert(noOpSubstringed2 == default)
     }
 
     'overlay{
@@ -167,8 +176,29 @@ object FansiTests extends TestSuite{
          .mkString("\n")
     }
 
+
     'colors - tabulate(fansi.Color.all)
     'backgrounds - tabulate(fansi.Back.all)
+
+    'emitAnsiCodes{
+      'basic - assert(
+        fansi.Attrs.emitAnsiCodes(0, fansi.Color.Red.applyMask) == Console.RED,
+        fansi.Attrs.emitAnsiCodes(fansi.Color.Red.applyMask, 0) == fansi.Color.Reset.escape
+      )
+      'combo - {
+        // One color stomps over the other
+        val colorColor = fansi.Color.Red ++ fansi.Color.Blue
+        assert(fansi.Attrs.emitAnsiCodes(0, colorColor.applyMask) == Console.BLUE)
+
+
+        val colorBold = fansi.Color.Red ++ fansi.Bold.On
+        assert(fansi.Attrs.emitAnsiCodes(0, colorBold.applyMask) == Console.RED + Console.BOLD)
+        // unlike Colors and Underlined and Reversed, Bold needs a hard reset,
+        assert(fansi.Attrs.emitAnsiCodes(colorBold.applyMask, 0) == Console.RESET)
+      }
+
+    }
+
     'negative{
       'errorMode{
         // Make sure that fansi.Str throws on most common non-color

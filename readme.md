@@ -1,4 +1,4 @@
-Fansi 0.1.2 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
+Fansi 0.1.3 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
 ======================================================================
 [Gitter Chat]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
@@ -8,8 +8,8 @@ Fansi 0.1.2 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
 ![LandingExample](docs/LandingExample.png)
 
 ```scala
-"com.lihaoyi" %% "fansi" % "0.1.2"
-"com.lihaoyi" %%% "fansi" % "0.1.2" // Scala.js
+"com.lihaoyi" %% "fansi" % "0.1.3"
+"com.lihaoyi" %%% "fansi" % "0.1.3" // Scala.js
 ```
 
 Fansi is a Scala library to make it easy to deal with fancy colored Ansi 
@@ -166,14 +166,25 @@ The main operations you need to know are:
 
 - `.render` to convert a `fansi.Str` back into a `java.lang.String` with all
   necessary Ansi color codes within it
-  
-- If you want to dig into deeper, you can use the `getColors` and `getChars`
-  methods on `fansi.Str` to extract the raw data for your own use, and piece
-  it back together with `fansi.Str.fromArrays`. This allows you to perform 
-  fast, mutable array operations on the color/character arrays if you know what
-  you're doing and want to perform operations that are inconvenient or slow 
-  to do through `fansi.Str`'s immutable API.
-   
+
+Digging Deeper
+--------------
+
+If you want to dig into deeper, there are a few more APIs you can use:
+
+
+- `getColors` and `getChars` methods on `fansi.Str` to extract the raw data 
+  for your own use
+- `fansi.Str.fromArrays` to piece it back together 
+
+This allows you to perform fast, mutable array operations on the 
+color/character arrays if you know what you're doing and want to perform 
+operations that are inconvenient or slow to do through `fansi.Str`'s immutable 
+API. For example, if you want to do a bunch of work with colored strings and 
+then at-the-end render everything to HTML, you can manually walk over the 
+color/character arrays yourself and decide where to print HTML tags to give
+the text colors.
+
 `fansi.Str` currently has a relatively skeletal API: it is slightly smaller
 than what `java.lang.String` has, and definitely much less than what is 
 available on `scala.RichString`'s extension methods. Feel free to implement
@@ -181,11 +192,35 @@ your own custom operations using `fromArrays` if you can't find what you want
 on `fansi.Str`, or send a patch if you think it's arguably general enough to
 be included in Fansi itself.
 
+- `fansi.Attrs.emitAnsiCodes` Lets you manually emit the different 
+  `java.lang.String`s that correspond to changes in color in an Ansi string.
+
+For example, if you want to emit the Ansi codes that correspond to the 
+transition from "No Color" to "Red", you can use 
+
+```scala
+fansi.Attrs.emitAnsiCodes(0, fansi.Color.Red.applyMask) // "\u001b[31m"
+```
+
+Or the Ansi codes from "Red" to "No Color"
+
+```scala
+fansi.Attrs.emitAnsiCodes(fansi.Color.Red.applyMask, 0) // "\u001b[39m"
+```
+
+Or for any other combination of attributes
+
+```scala
+val attrs = fansi.Color.Red ++ fansi.Back.Blue ++ fansi.Underlined.On
+fansi.Attrs.emitAnsiCodes(0, attrs.applyMask) // "\u001b[31m\u001b[44m\u001b[4m"
+```
+
 You can also pass in an `errorMode` when parsing a string via `ansi.Str(...)`
 to tell Fansi how to behave if it finds Ansi escapes it can't handle. You
 have the options:
 
-- `fansi.ErrorMode.Throw` to throw an exception and fail the parse
+- `fansi.ErrorMode.Throw` is the default, to throw an exception and fail the 
+  parse if it sees an Ansi escape it does not recognize.
 - `fansi.ErrorMode.Sanitize` to remove the escape character but leave the
   remnants of the escape-sequence in the result that people can see
 - `fansi.ErrorMode.Strip` to remove those escape sequences entirely so that
@@ -194,10 +229,17 @@ have the options:
 Scaladoc
 --------
 
-- [0.1.2](http://lihaoyi.github.io/fansi/)
+- [0.1.3](http://lihaoyi.github.io/fansi/api)
 
 Changelog
 ---------
+
+### 0.1.3
+
+- Fixed a bug in `substring` that incorrectly threw an out of bounds exception
+  for `end == length`
+- Exposed the `fansi.Attrs.emitAnsiCodes` function
+- Renamed `Attrs.empty` to `Attrs.Empty` for consistency with all the others
 
 ### 0.1.2
 
