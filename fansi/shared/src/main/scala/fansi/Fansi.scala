@@ -67,11 +67,11 @@ case class Str private(private val chars: Array[Char], private val colors: Array
     * did
     */
   def substring(start: Int = 0, end: Int = length) = {
-    if (start < 0 || start >= length) throw new IllegalArgumentException(
-      s"substring start parameter [$start] must be between 0 and $length"
+    require(start >= 0 && start <= length,
+      s"substring start parameter [$start] must be between 0 and length:$length"
     )
-    if (end < 0 || end >= length || end < start) throw new IllegalArgumentException(
-      s"substring end parameter [$end] must be between start $start and $length"
+    require(end >= start && end <= length,
+      s"substring end parameter [$end] must be between start $start and length:$length"
     )
     new Str(
       util.Arrays.copyOfRange(chars, start, end),
@@ -126,34 +126,6 @@ case class Str private(private val chars: Array[Char], private val colors: Array
     // Make a local array copy of the immutable Vector, for maximum performance
     // since the Vector is small and we'll be looking it up over & over & over
     val categoryArray = Attr.categories.toArray
-    /**
-      * Emit the ansi escapes necessary to transition
-      * between two states, if necessary.
-      */
-    def emitDiff(nextState: Int) = if (currentState != nextState){
-      val hardOffMask = Bold.mask
-      // Any of these transitions from 1 to 0 within the hardOffMask
-      // categories cannot be done with a single ansi escape, and need
-      // you to emit a RESET followed by re-building whatever ansi state
-      // you previous had from scratch
-      if ((currentState & ~nextState & hardOffMask) != 0){
-        output.append(Console.RESET)
-        currentState = 0
-      }
-
-      var categoryIndex = 0
-      while(categoryIndex < categoryArray.length){
-        val cat = categoryArray(categoryIndex)
-        if ((cat.mask & currentState) != (cat.mask & nextState)){
-          val attr = cat.lookupAttr(nextState & cat.mask)
-
-          if (attr.escapeOpt.isDefined) {
-            output.append(attr.escapeOpt.get)
-          }
-        }
-        categoryIndex += 1
-      }
-    }
 
     var i = 0
     while(i < colors.length){
@@ -161,7 +133,7 @@ case class Str private(private val chars: Array[Char], private val colors: Array
       // fast-path optimization to check for integer equality first before
       // going through the whole `enableDiff` rigmarole
       if (colors(i) != currentState) {
-        emitDiff(colors(i))
+        Attrs.emitAnsiCodes0(currentState, colors(i), output, categoryArray)
         currentState = colors(i)
       }
       output.append(chars(i))
@@ -170,7 +142,7 @@ case class Str private(private val chars: Array[Char], private val colors: Array
 
     // Cap off the left-hand-side of the rendered string with any ansi escape
     // codes necessary to rest the state to 0
-    emitDiff(0)
+    Attrs.emitAnsiCodes0(currentState, 0, output, categoryArray)
 
     output.toString
   }
@@ -201,7 +173,7 @@ case class Str private(private val chars: Array[Char], private val colors: Array
       require(start >= 0, s"start:$start must be greater than or equal to 0")
       require(
         end <= colors.length,
-        s"end:$end must be less than or equal to colors.length:$colors.length"
+        s"end:$end must be less than or equal to length:${colors.length}"
       )
 
       {
@@ -427,7 +399,57 @@ sealed trait Attrs{
 
 object Attrs{
 
-  val empty = Attrs()
+  val Empty = Attrs()
+
+  /**
+    * Emit the ansi escapes necessary to transition
+    * between two states, if necessary, as a `java.lang.String`
+    */
+  def emitAnsiCodes(currentState: Str.State, nextState: Str.State) = {
+    val output = new StringBuilder
+    val categoryArray = Attr.categories.toArray
+    emitAnsiCodes0(currentState, nextState, output, categoryArray)
+    output.toString
+  }
+
+  /**
+    * Messy-but-fast version of [[emitAnsiCodes]] that avoids allocating things
+    * unnecessarily. Reads it's category listing from a fast Array version of
+    * Attrs.categories and writes it's output to a mutable `StringBuilder`
+    */
+  def emitAnsiCodes0(currentState: Str.State,
+                nextState: Str.State,
+                output: StringBuilder,
+                categoryArray: Array[Category]) = {
+    if (currentState != nextState){
+
+      val hardOffMask = Bold.mask
+      // Any of these transitions from 1 to 0 within the hardOffMask
+      // categories cannot be done with a single ansi escape, and need
+      // you to emit a RESET followed by re-building whatever ansi state
+      // you previous had from scratch
+      val currentState2 =
+        if ((currentState & ~nextState & hardOffMask) != 0){
+          output.append(Console.RESET)
+          0
+        }else {
+          currentState
+        }
+
+      var categoryIndex = 0
+      while(categoryIndex < categoryArray.length){
+        val cat = categoryArray(categoryIndex)
+        if ((cat.mask & currentState2) != (cat.mask & nextState)){
+          val attr = cat.lookupAttr(nextState & cat.mask)
+
+          if (attr.escapeOpt.isDefined) {
+            output.append(attr.escapeOpt.get)
+          }
+        }
+        categoryIndex += 1
+      }
+    }
+  }
 
   def apply(attrs: Attr*): Attrs = {
     var output = List.empty[Attr]
@@ -511,7 +533,7 @@ object Attr{
   /**
     * A list of possible categories
     */
-  val categories = Vector(
+  val categories = Vector[Category](
     Color,
     Back,
     Bold,
