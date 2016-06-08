@@ -3,7 +3,6 @@ package fansi
 import java.util
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 
 /**
   * Encapsulates a string with associated ANSI colors and text decorations.
