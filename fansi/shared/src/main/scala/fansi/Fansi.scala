@@ -1,8 +1,10 @@
 package fansi
 
 import java.util
+import java.util.regex.Pattern
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 /**
   * Encapsulates a string with associated ANSI colors and text decorations.
@@ -156,10 +158,10 @@ case class Str private(private val chars: Array[Char], private val colors: Array
   }
 
   /**
-    * Overlays the desired color over the specified pattern
+    * Overlays the desired color over the occurrences of the specified regex
     */
-  def overlay(attrs: Attrs, pattern: String) = {
-    overlayAll(Str.boundsOf(new String(chars), pattern, 0).map(bs => (attrs, bs._1, bs._2)))
+  def overlay(attrs: Attrs, regex: String) = {
+    overlayAll(Str.boundsOf(chars, regex).map(bs => (attrs, bs._1, bs._2)))
   }
 
   /**
@@ -358,13 +360,15 @@ object Str{
     new Trie(pairs :+ (Console.RESET -> Attr.Reset))
   }
 
-  private[Str] def boundsOf(string: String, pattern: String, fromIndex: Int): Stream[(Int, Int)] =
-    string.indexOf(pattern, fromIndex) match {
-      case -1 => Stream.empty
-      case from =>
-        val to = from + pattern.length
-        (from, to) #:: boundsOf(string, pattern, to)
+  private[Str] def boundsOf(string: Array[Char], regex: String): Stream[(Int, Int)] = {
+    val pattern = Pattern.compile(regex)
+    val matcher = pattern.matcher(string)
+    var buffer = mutable.Buffer.empty[(Int, Int)]
+    while (matcher.find) {
+        buffer += ((matcher.start, if (matcher.start == matcher.end) matcher.end + 1 else matcher.end))
     }
+    buffer.toStream
+  }
 }
 
 /**
