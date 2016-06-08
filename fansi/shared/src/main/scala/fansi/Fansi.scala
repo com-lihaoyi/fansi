@@ -157,6 +157,13 @@ case class Str private(private val chars: Array[Char], private val colors: Array
   }
 
   /**
+    * Overlays the desired color over the specified pattern
+    */
+  def overlay(attrs: Attrs, pattern: String) = {
+    overlayAll(Str.boundsOf(new String(chars), pattern, 0).map(bs => (attrs, bs._1, bs._2)))
+  }
+
+  /**
     * Batch version of [[overlay]], letting you apply a bunch of [[Attrs]] onto
     * various parts of the same string in one operation, avoiding the unnecessary
     * copying that would happen if you applied them with [[overlay]] one by one.
@@ -351,6 +358,14 @@ object Str{
     } yield (str, color)
     new Trie(pairs :+ (Console.RESET -> Attr.Reset))
   }
+
+  private[Str] def boundsOf(string: String, pattern: String, fromIndex: Int): Stream[(Int, Int)] =
+    string.indexOf(pattern, fromIndex) match {
+      case -1 => Stream.empty
+      case from =>
+        val to = from + pattern.length
+        (from, to) #:: boundsOf(string, pattern, to)
+    }
 }
 
 /**
