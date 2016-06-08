@@ -102,6 +102,26 @@ object FansiTests extends TestSuite{
 
         assert(overlayed == expected)
       }
+      'pattern{
+        val overlayed = fansi.Str(rgbOps).overlay(fansi.Color.Yellow, "--*")
+        val expected = s"+++$R-$Y--*$G**$B///$RTC"
+        assert(overlayed.render == expected)
+      }
+      'missingPattern{
+        val overlayed = fansi.Str(rgbOps).overlay(fansi.Color.Yellow, "+**")
+        val expected = s"$rgbOps$RTC"
+        assert(overlayed.render == expected)
+      }
+      'fullPattern {
+        val overlayed = fansi.Str(rgbOps).overlay(fansi.Color.Yellow, fansi.Str(rgbOps).plainText)
+        val expected = s"$Y+++---***///$RTC"
+        assert(overlayed.render == expected)
+      }
+      'recurringPattern {
+        val overlayed = fansi.Str("^_^").overlay(fansi.Color.Green, "^")
+        val expected = s"$G^${RTC}_$G^${RTC}"
+        assert(overlayed.render == expected)
+      }
       'underlines{
         val resetty = s"$UND#$RES    $UND#$RES"
         'underlineBug{
