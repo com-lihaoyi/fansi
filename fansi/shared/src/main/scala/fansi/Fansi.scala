@@ -243,11 +243,11 @@ object ErrorMode{
 object Str{
 
   /**
-    * An [[fansi.Str]]'s `color`s array is filled with Ints, each representing
+    * An [[fansi.Str]]'s `color`s array is filled with Long, each representing
     * the ANSI state of one character encoded in its bits. Each [[Attr]] belongs
-    * to a [[Category]] that occupies a range of bits within each int:
+    * to a [[Category]] that occupies a range of bits within each long:
     *
-    * 31... 22 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+    * 61... 55 54  53 52 51 .... 31 30 29 28  27 26 25 ..... 6  5  4  3  2  1  0
     *  |--------|  |-----------------------|  |-----------------------|  |  |  |bold
     *           |                          |                          |  |  |reversed
     *           |                          |                          |  |underlined
@@ -256,7 +256,7 @@ object Str{
     *           |unused
     *
     *
-    * The `0000 0000 0000 0000` int corresponds to plain text with no decoration
+    * The `0000 0000 0000 0000` long corresponds to plain text with no decoration
     *
     */
   type State = Long
@@ -617,8 +617,15 @@ object Underlined extends Category(offset = 2, width = 1){
 
 /**
   * [[Attr]]s to set or reset the color of your foreground text
+  * Color a encoded on 25 bit as follow :
+  * 0 : reset value
+  * 1 - 16 : 4 bit colors
+  * 17 - 273 : 8 bit colors
+  * 274 - 16 777 489 : 24 bit colors
   */
-object Color extends Category(offset = 3, width = 25){
+object Color extends Category(offset = 3, width = 25) with TrueColor{
+
+  val trueColorCode = 38
 
   val Reset        = makeAttr("\u001b[39m",     0)
   val Black        = makeAttr(Console.BLACK,    1)
@@ -644,37 +651,25 @@ object Color extends Category(offset = 3, width = 25){
     for(x <- 0 to 256)
     yield makeAttr(s"\u001b[38;5;${x}m", 17 + x)(s"Color.Full($x)")
 
-  def True(hex: Long) = {
-    val r = hex >> 16
-    val g = (hex & 0x00FF00) >> 8
-    val b = hex & 0x0000FF
-    makeAttr(s"\u001b[38;2;${r};${g};${b}m", 174 + hex)(s"Color.True($r,$g,$b)")
-  }
-
-  def True(r: Long, g: Long, b: Long) = {
-    val i : Long = r << 16l | g << 8l | b
-    makeAttr(s"\u001b[38;2;${r};${g};${b}m", 174 + i)(s"Color.True($r,$g,$b)")
-  }
 
   val all: Vector[Attr] = Vector(
     Reset, Black, Red, Green, Yellow, Blue, Magenta, Cyan, LightGray, DarkGray,
     LightRed, LightGreen, LightYellow, LightBlue, LightMagenta, LightCyan, White
   ) ++ Full
 
-  override def lookupAttr(applyState : Long) : Attr = {
-    val index = applyState >> offset
-    if(index < 274 ) {
-      lookupAttrTable(index.toInt) //I think it's safe if i > 0
-    } else {
-      True(index)
-    }
-  }
 }
 
 /**
   * [[Attr]]s to set or reset the color of your background
+  * Color a encoded on 25 bit as follow :
+  * 0 : reset value
+  * 1 - 16 : 3 bit colors
+  * 17 - 273 : 8 bit colors
+  * 274 - 16 777 389 : 24 bit colors
   */
-object Back extends Category(offset = 28, width = 25){
+object Back extends Category(offset = 28, width = 25) with TrueColor{
+
+  val trueColorCode = 48
 
   val Reset        = makeAttr("\u001b[49m",       0)
   val Black        = makeAttr(Console.BLACK_B,    1)
@@ -700,31 +695,13 @@ object Back extends Category(offset = 28, width = 25){
     for(x <- 0 to 256)
     yield makeAttr(s"\u001b[48;5;${x}m", 17 + x)(s"Back.Full($x)")
 
-  def True(hex: Long) = {
-    val r = hex >> 16
-    val g = (hex & 0x00FF00) >> 8
-    val b = hex & 0x0000FF
-    makeAttr(s"\u001b[48;2;${r};${g};${b}m", 174 + hex)(s"Back.True($r,$g,$b)")
-  }
 
-  def True(r: Int, g: Int, b: Int) = {
-    val i = r << 16 | g << 8 | b
-    makeAttr(s"\u001b[48;2;${r};${g};${b}m", 174 + i)(s"Back.True($r,$g,$b)")
-  }
 
   val all: Vector[Attr] = Vector(
     Reset, Black, Red, Green, Yellow, Blue, Magenta, Cyan, LightGray, DarkGray,
     LightRed, LightGreen, LightYellow, LightBlue, LightMagenta, LightCyan, White
   ) ++ Full
 
-  override def lookupAttr(applyState : Long) : Attr = {
-    val index = applyState >> offset
-    if(index < 274 ) {
-      lookupAttrTable(index.toInt) //I think it's safe if i > 0
-    } else {
-      True(index)
-    }
-  }
 }
 
 
@@ -782,5 +759,38 @@ private[this] final class Trie[T](strings: Seq[(String, T)]){
     }
     rec(index, this)
   }
+}
+
+
+
+trait TrueColor extends Category {
+  /**
+    * Selected Graphic Rendition
+    * 38 : front color
+    * 48 : background color
+    */
+  val trueColorCode : Int
+
+  def True(hex: Long) = {
+    val r = hex >> 16
+    val g = (hex & 0x00FF00) >> 8
+    val b = hex & 0x0000FF
+    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 274 + hex)("True(" + r + "," + g + "," + b +")")
+  }
+
+  def True(r: Int, g: Int, b: Int) = {
+    val i = r << 16 | g << 8 | b
+    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 274 + i)("True(" + r + "," + g + "," + b +")")
+  }
+
+  override def lookupAttr(applyState : Long) : Attr = {
+    val index = applyState >> offset
+    if(index < 274 ) {
+      lookupAttrTable(index.toInt) //I think it's safe if i > 0
+    } else {
+      True(index - 274)
+    }
+  }
+
 }
 
