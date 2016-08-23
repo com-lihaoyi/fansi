@@ -170,15 +170,51 @@ object FansiTests extends TestSuite{
       }
     }
     def tabulate(all: Seq[fansi.Attr]) = {
-      all.map(attr => attr.toString + " " * (25 - attr.name.length))
-         .grouped(3)
-         .map(_.mkString)
-         .mkString("\n")
+      all.map(attr => attr.toString + " " * (30 - attr.name.length))
+        .grouped(3)
+        .map(_.mkString)
+        .mkString("\n")
+    }
+
+    def square(all : Seq[fansi.Attr]) = {
+      all.map( attr => attr.escapeOpt.getOrElse("") + "#")
+        .grouped(32)
+        .map(_.mkString)
+        .mkString("\n")
     }
 
 
     'colors - tabulate(fansi.Color.all)
+
     'backgrounds - tabulate(fansi.Back.all)
+
+    'trueColorConstructors - {
+      'red - fansi.Color.True(255,0,0)
+
+      'redhexa - fansi.Color.True(0xFF0000)
+
+      'green - fansi.Color.True(0,255,0)
+
+      'greenhexa - fansi.Color.True(0x00FF00)
+
+      'blue - fansi.Color.True(0,0,255)
+
+      'bluehaxe - fansi.Color.True(0x0000FF)
+
+      "256 shade of gray" - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
+
+      'trueColors - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Color.True(i))
+
+      'trueBackgrounds - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Back.True(i))
+
+      'blackState - assert (fansi.Color.lookupAttr(274 << 3) == fansi.Color.True(0,0,0) )
+
+      'whitState -  assert (fansi.Color.lookupAttr(16777489 << 3) == fansi.Color.True(255,255,255) )
+
+      'redState -  assert (fansi.Color.lookupAttr((0xFF0000 + 274) << 3) == fansi.Color.True(255,0,0))
+
+      'lastFullState - assert ( fansi.Color.lookupAttr(273 << 3) == fansi.Color.Full(256))
+    }
 
     'emitAnsiCodes{
       'basic - assert(

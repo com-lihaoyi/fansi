@@ -243,11 +243,11 @@ object ErrorMode{
 object Str{
 
   /**
-    * An [[fansi.Str]]'s `color`s array is filled with Ints, each representing
+    * An [[fansi.Str]]'s `color`s array is filled with Long, each representing
     * the ANSI state of one character encoded in its bits. Each [[Attr]] belongs
-    * to a [[Category]] that occupies a range of bits within each int:
+    * to a [[Category]] that occupies a range of bits within each long:
     *
-    * 31... 22 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+    * 61... 55 54  53 52 51 .... 31 30 29 28  27 26 25 ..... 6  5  4  3  2  1  0
     *  |--------|  |-----------------------|  |-----------------------|  |  |  |bold
     *           |                          |                          |  |  |reversed
     *           |                          |                          |  |underlined
@@ -256,10 +256,10 @@ object Str{
     *           |unused
     *
     *
-    * The `0000 0000 0000 0000` int corresponds to plain text with no decoration
+    * The `0000 0000 0000 0000` long corresponds to plain text with no decoration
     *
     */
-  type State = Int
+  type State = Long
 
   /**
     * Make the construction of [[fansi.Str]]s from `String`s and other
@@ -299,9 +299,9 @@ object Str{
     // too big if the input has any ansi codes at all but that's ok, we'll
     // trim them later.
     val chars = new Array[Char](raw.length)
-    val colors = new Array[Int](raw.length)
+    val colors = new Array[Str.State](raw.length)
 
-    var currentColor = 0
+    var currentColor = 0l
     var sourceIndex = 0
     var destIndex = 0
     val length = raw.length
@@ -373,13 +373,13 @@ sealed trait Attrs{
     * Which bits of the [[Str.State]] integer these [[Attrs]] will
     * override when it is applied
     */
-  def resetMask: Int
+  def resetMask: Long
 
   /**
     * Which bits of the [[Str.State]] integer these [[Attrs]] will
     * set to `1` when it is applied
     */
-  def applyMask: Int
+  def applyMask: Long
 
   /**
     * Apply the current [[Attrs]] to the [[Str.State]] integer,
@@ -431,7 +431,7 @@ object Attrs{
       val currentState2 =
         if ((currentState & ~nextState & hardOffMask) != 0){
           output.append(Console.RESET)
-          0
+          0l
         }else {
           currentState
         }
@@ -453,8 +453,8 @@ object Attrs{
 
   def apply(attrs: Attr*): Attrs = {
     var output = List.empty[Attr]
-    var resetMask = 0
-    var applyMask = 0
+    var resetMask = 0l
+    var applyMask = 0l
     // Walk the list of attributes backwards, and aggregate only those whose
     // `resetMask` is not going to get totally covered by the union of all
     // `resetMask`s that come after it.
@@ -474,8 +474,8 @@ object Attrs{
     else new Multiple(resetMask, applyMask, output.toArray.reverse:_*)
   }
 
-  class Multiple private[Attrs] (val resetMask: Int,
-                                 val applyMask: Int,
+  class Multiple private[Attrs] (val resetMask: Long,
+                                 val applyMask: Long,
                                  val attrs: Attr*) extends Attrs{
     assert(attrs.length != 1)
     override def hashCode() = attrs.hashCode()
@@ -544,7 +544,7 @@ object Attr{
 /**
   * An [[Attr]] represented by an fansi escape sequence
   */
-case class EscapeAttr private[fansi](escape: String, resetMask: Int, applyMask: Int)
+case class EscapeAttr private[fansi](escape: String, resetMask: Long, applyMask: Long)
                                     (implicit sourceName: sourcecode.Name) extends Attr{
   def escapeOpt = Some(escape)
   val name = sourceName.value
@@ -554,7 +554,7 @@ case class EscapeAttr private[fansi](escape: String, resetMask: Int, applyMask: 
 /**
   * An [[Attr]] for which no fansi escape sequence exists
   */
-case class ResetAttr private[fansi](resetMask: Int, applyMask: Int)
+case class ResetAttr private[fansi](resetMask: Long, applyMask: Long)
                                    (implicit sourceName: sourcecode.Name) extends Attr{
   def escapeOpt = None
   val name = sourceName.value
@@ -569,21 +569,21 @@ case class ResetAttr private[fansi](resetMask: Int, applyMask: Int)
   */
 sealed abstract class Category(val offset: Int, val width: Int)(implicit catName: sourcecode.Name){
   def mask = ((1 << width) - 1) << offset
-  val all: Seq[Attr]
+  val all: Vector[Attr]
 
-  def lookupAttr(applyState: Int) = lookupAttrTable(applyState >> offset)
+  def lookupAttr(applyState: Long) = lookupAttrTable(applyState >> offset toInt)
   // Allows fast lookup of categories based on the desired applyState
-  private[this] lazy val lookupAttrTable = {
+  protected[this] lazy val lookupAttrTable = {
     val arr = new Array[Attr](1 << width)
     for(attr <- all){
-      arr(attr.applyMask >> offset) = attr
+      arr(attr.applyMask >> offset toInt) = attr
     }
     arr
   }
-  def makeAttr(s: String, applyValue: Int)(implicit name: sourcecode.Name) = {
+  def makeAttr(s: String, applyValue: Long)(implicit name: sourcecode.Name) = {
     new EscapeAttr(s, mask, applyValue << offset)(catName.value + "." + name.value)
   }
-  def makeNoneAttr(applyValue: Int)(implicit name: sourcecode.Name) = {
+  def makeNoneAttr(applyValue: Long)(implicit name: sourcecode.Name) = {
     new ResetAttr(mask, applyValue << offset)(catName.value + "." + name.value)
   }
 }
@@ -594,7 +594,7 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
 object Bold extends Category(offset = 0, width = 1){
   val On  = makeAttr(Console.BOLD, 1)
   val Off = makeNoneAttr(          0)
-  val all = Seq(On, Off)
+  val all: Vector[Attr] = Vector(On, Off)
 }
 
 /**
@@ -604,7 +604,7 @@ object Bold extends Category(offset = 0, width = 1){
 object Reversed extends Category(offset = 1, width = 1){
   val On  = makeAttr(Console.REVERSED,   1)
   val Off = makeAttr("\u001b[27m",       0)
-  val all = Seq(On, Off)
+  val all: Vector[Attr] = Vector(On, Off)
 }
 /**
   * [[Attr]]s to enable or disable underlined text
@@ -612,13 +612,20 @@ object Reversed extends Category(offset = 1, width = 1){
 object Underlined extends Category(offset = 2, width = 1){
   val On  = makeAttr(Console.UNDERLINED, 1)
   val Off = makeAttr("\u001b[24m",       0)
-  val all = Seq(On, Off)
+  val all: Vector[Attr] = Vector(On, Off)
 }
 
 /**
   * [[Attr]]s to set or reset the color of your foreground text
+  * Color a encoded on 25 bit as follow :
+  * 0 : reset value
+  * 1 - 16 : 4 bit colors
+  * 17 - 273 : 8 bit colors
+  * 274 - 16 777 489 : 24 bit colors
   */
-object Color extends Category(offset = 3, width = 9){
+object Color extends Category(offset = 3, width = 25) with TrueColor{
+
+  val trueColorCode = 38
 
   val Reset        = makeAttr("\u001b[39m",     0)
   val Black        = makeAttr(Console.BLACK,    1)
@@ -644,16 +651,25 @@ object Color extends Category(offset = 3, width = 9){
     for(x <- 0 to 256)
     yield makeAttr(s"\u001b[38;5;${x}m", 17 + x)(s"Color.Full($x)")
 
-  val all = Vector(
+
+  val all: Vector[Attr] = Vector(
     Reset, Black, Red, Green, Yellow, Blue, Magenta, Cyan, LightGray, DarkGray,
     LightRed, LightGreen, LightYellow, LightBlue, LightMagenta, LightCyan, White
   ) ++ Full
+
 }
 
 /**
   * [[Attr]]s to set or reset the color of your background
+  * Color a encoded on 25 bit as follow :
+  * 0 : reset value
+  * 1 - 16 : 3 bit colors
+  * 17 - 273 : 8 bit colors
+  * 274 - 16 777 389 : 24 bit colors
   */
-object Back extends Category(offset = 12, width = 9){
+object Back extends Category(offset = 28, width = 25) with TrueColor{
+
+  val trueColorCode = 48
 
   val Reset        = makeAttr("\u001b[49m",       0)
   val Black        = makeAttr(Console.BLACK_B,    1)
@@ -679,10 +695,13 @@ object Back extends Category(offset = 12, width = 9){
     for(x <- 0 to 256)
     yield makeAttr(s"\u001b[48;5;${x}m", 17 + x)(s"Back.Full($x)")
 
-  val all = Vector(
+
+
+  val all: Vector[Attr] = Vector(
     Reset, Black, Red, Green, Yellow, Blue, Magenta, Cyan, LightGray, DarkGray,
     LightRed, LightGreen, LightYellow, LightBlue, LightMagenta, LightCyan, White
   ) ++ Full
+
 }
 
 
@@ -740,5 +759,38 @@ private[this] final class Trie[T](strings: Seq[(String, T)]){
     }
     rec(index, this)
   }
+}
+
+
+
+trait TrueColor extends Category {
+  /**
+    * Selected Graphic Rendition
+    * 38 : front color
+    * 48 : background color
+    */
+  val trueColorCode : Int
+
+  def True(hex: Long) = {
+    val r = hex >> 16
+    val g = (hex & 0x00FF00) >> 8
+    val b = hex & 0x0000FF
+    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 274 + hex)("True(" + r + "," + g + "," + b +")")
+  }
+
+  def True(r: Int, g: Int, b: Int) = {
+    val i = r << 16 | g << 8 | b
+    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 274 + i)("True(" + r + "," + g + "," + b +")")
+  }
+
+  override def lookupAttr(applyState : Long) : Attr = {
+    val index = applyState >> offset
+    if(index < 274 ) {
+      lookupAttrTable(index.toInt) //I think it's safe if i > 0
+    } else {
+      True(index - 274)
+    }
+  }
+
 }
 
