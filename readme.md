@@ -239,7 +239,7 @@ have the options:
 Scaladoc
 --------
 
-- [0.1.3](http://lihaoyi.github.io/fansi/api)
+- [0.2.0](http://lihaoyi.github.io/fansi/api)
 
 Changelog
 ---------
