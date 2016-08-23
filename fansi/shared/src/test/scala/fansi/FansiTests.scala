@@ -214,6 +214,24 @@ object FansiTests extends TestSuite{
       'redState -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 3) == fansi.Color.True(255,0,0))
 
       'lastFullState - assert ( fansi.Color.lookupAttr(272 << 3) == fansi.Color.Full(255))
+
+      'parsing - {
+        def check(frag: fansi.Str) = {
+          fansi.Str(frag.render) == frag
+          frag
+        }
+        * - check(fansi.Color.True(255, 0, 0)("lol"))
+        * - check(fansi.Color.True(1, 234, 56)("lol"))
+        * - check(fansi.Color.True(255, 255, 255)("lol"))
+        * - {
+          (for(i <- 0 to 255) yield check(fansi.Color.True(i,i,i)("x"))).mkString
+        }
+        * - check(
+          "#" + fansi.Color.True(127, 126, 0)("lol") + "omg" + fansi.Color.True(127, 126, 0)("wtf")
+        )
+
+        * - check(square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i)))
+      }
     }
 
     'emitAnsiCodes{

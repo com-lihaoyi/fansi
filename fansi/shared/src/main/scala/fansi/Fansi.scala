@@ -308,13 +308,50 @@ object Str{
     while(sourceIndex < length){
       val char = raw.charAt(sourceIndex)
       if (char == '\u001b' || char == '\u009b') {
-        ParseMap.query(raw, sourceIndex) match{
+        val escapeStartSourceIndex = sourceIndex
+        ParseMap.query(raw, escapeStartSourceIndex) match{
+          case None => sourceIndex = errorMode.handle(sourceIndex, raw)
           case Some(tuple) =>
-            currentColor = tuple._2.transform(currentColor)
-            sourceIndex += tuple._1
-          case None =>
-            sourceIndex = errorMode.handle(sourceIndex, raw)
-
+            tuple match {
+              case (newIndex, Left(color)) =>
+                currentColor = color.transform(currentColor)
+                sourceIndex += newIndex
+              case (newIndex, Right(category)) =>
+                sourceIndex += newIndex
+                def isDigit(index: Int) = {
+                  raw.charAt(index) >= '0' && raw.charAt(index) <= '9'
+                }
+                def getNumber() = {
+                  var value = 0
+                  while (isDigit(sourceIndex) && value < 255) {
+                    value = value * 10 + (raw.charAt(sourceIndex) - '0').toInt
+                    sourceIndex += 1
+                  }
+                  value
+                }
+                if (!isDigit(sourceIndex)) {
+                  sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
+                } else {
+                  val r = getNumber()
+                  if (raw.charAt(sourceIndex) != ';' || !isDigit(sourceIndex + 1)) {
+                    sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
+                  } else {
+                    sourceIndex += 1
+                    val g = getNumber()
+                    if (raw.charAt(sourceIndex) != ';' || !isDigit(sourceIndex + 1)) {
+                      sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
+                    } else {
+                      sourceIndex += 1
+                      val b = getNumber()
+                      if (raw.charAt(sourceIndex) != 'm') {
+                        sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
+                      } else {
+                        currentColor = tuple._2.right.get.True(r, g, b).transform(currentColor)
+                      }
+                    }
+                  }
+                }
+            }
         }
       }else {
         colors(destIndex) = currentColor
@@ -348,8 +385,15 @@ object Str{
       cat <- Attr.categories
       color <- cat.all
       str <- color.escapeOpt
-    } yield (str, color)
-    new Trie(pairs :+ (Console.RESET -> Attr.Reset))
+    } yield (str, Left(color))
+    val reset = Seq(
+      Console.RESET -> Left(Attr.Reset)
+    )
+    val trueColors = Seq(
+      "\u001b[38;2;" -> Right(Color),
+      "\u001b[48;2;" -> Right(Back)
+    )
+    new Trie(pairs ++ reset ++ trueColors)
   }
 }
 
@@ -729,6 +773,7 @@ private[this] final class Trie[T](strings: Seq[(String, T)]){
   def query(input: CharSequence, index: Int): Option[(Int, T)] = {
 
     @tailrec def rec(offset: Int, currentNode: Trie[T]): Option[(Int, T)] = {
+
       if (currentNode.value.isDefined) currentNode.value.map(offset - index -> _)
       else if (offset >= input.length) None
       else {
