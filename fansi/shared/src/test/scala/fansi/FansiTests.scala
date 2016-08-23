@@ -188,7 +188,7 @@ object FansiTests extends TestSuite{
 
     'backgrounds - tabulate(fansi.Back.all)
 
-    'trueColorConstructors - {
+    'trueColor - {
       'red - fansi.Color.True(255,0,0)
 
       'redhexa - fansi.Color.True(0xFF0000)
@@ -231,6 +231,39 @@ object FansiTests extends TestSuite{
         )
 
         * - check(square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i)))
+
+
+      }
+      'failure{
+        'tooLongToParse{
+          * - intercept[IllegalArgumentException]{
+            fansi.Str("\u001b[38;2;0;0;256m").plainText.toSeq.map(_.toInt)
+          }
+          * - intercept[IllegalArgumentException]{
+            fansi.Str("\u001b[38;2;0;256;0m").plainText.toSeq.map(_.toInt)
+          }
+          * - intercept[IllegalArgumentException]{
+            fansi.Str("\u001b[38;2;256;0;0m").plainText.toSeq.map(_.toInt)
+          }
+          * - intercept[IllegalArgumentException]{
+            fansi.Str("\u001b[38;2;1111;0;0m").plainText.toSeq.map(_.toInt)
+          }
+        }
+        'truncatedParsing - {
+          val escape = fansi.Color.True(255, 0, 0).escape
+          for (i <- 1 until escape.length - 1)
+          yield intercept[IllegalArgumentException] {
+            fansi.Str(escape.dropRight(i))
+          }
+        }
+        'args{
+          * - intercept[IllegalArgumentException]{ fansi.Color.True(256, 0, 0) }
+          * - intercept[IllegalArgumentException]{ fansi.Color.True(0, 256, 0) }
+          * - intercept[IllegalArgumentException]{ fansi.Color.True(0, 0, 256) }
+          * - intercept[IllegalArgumentException]{ fansi.Color.True(-1, 0, 0) }
+          * - intercept[IllegalArgumentException]{ fansi.Color.True(0, -1, 0) }
+          * - intercept[IllegalArgumentException]{ fansi.Color.True(0, 0, -1) }
+        }
       }
     }
 

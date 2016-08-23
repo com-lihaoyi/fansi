@@ -207,12 +207,15 @@ object ErrorMode{
   case object Throw extends ErrorMode{
     def handle(sourceIndex: Int, raw: CharSequence) = {
       val matcher = Str.ansiRegex.matcher(raw)
-      matcher.find(sourceIndex)
-      val detail = raw.subSequence(sourceIndex + 1, matcher.end())
+      val detail =
+        if (!matcher.find(sourceIndex)) ""
+        else {
+          val end = matcher.end()
+          " " + raw.subSequence(sourceIndex + 1, end)
+        }
 
-      // Fail fast and complain about the unknown ansi-escape
       throw new IllegalArgumentException(
-        s"Unknown ansi-escape $detail at index $sourceIndex " +
+        s"Unknown ansi-escape$detail at index $sourceIndex " +
           "inside string cannot be parsed into an fansi.Str"
       )
     }
@@ -317,36 +320,50 @@ object Str{
                 currentColor = color.transform(currentColor)
                 sourceIndex += newIndex
               case (newIndex, Right(category)) =>
+                // Gross manual char-by-char parsing of the remainder
+                // of the True-color escape, to maximize performance
                 sourceIndex += newIndex
                 def isDigit(index: Int) = {
-                  raw.charAt(index) >= '0' && raw.charAt(index) <= '9'
+                  index < raw.length && raw.charAt(index) >= '0' && raw.charAt(index) <= '9'
+                }
+                def checkChar(index: Int, char: Char) = {
+                  index < raw.length && raw.charAt(index) == char
+                }
+                def fail() = {
+                  sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
                 }
                 def getNumber() = {
                   var value = 0
-                  while (isDigit(sourceIndex) && value < 255) {
+                  var count = 0
+                  while (isDigit(sourceIndex) && count < 3) {
                     value = value * 10 + (raw.charAt(sourceIndex) - '0').toInt
                     sourceIndex += 1
+                    count += 1
                   }
                   value
                 }
-                if (!isDigit(sourceIndex)) {
-                  sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
-                } else {
+                if (!isDigit(sourceIndex)) fail()
+                else {
                   val r = getNumber()
-                  if (raw.charAt(sourceIndex) != ';' || !isDigit(sourceIndex + 1)) {
-                    sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
-                  } else {
+                  if (!checkChar(sourceIndex, ';') || !isDigit(sourceIndex + 1)) fail()
+                  else {
                     sourceIndex += 1
                     val g = getNumber()
-                    if (raw.charAt(sourceIndex) != ';' || !isDigit(sourceIndex + 1)) {
-                      sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
-                    } else {
+                    if (!checkChar(sourceIndex, ';') || !isDigit(sourceIndex + 1)) fail()
+                    else {
                       sourceIndex += 1
                       val b = getNumber()
-                      if (raw.charAt(sourceIndex) != 'm') {
-                        sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
-                      } else {
-                        currentColor = tuple._2.right.get.True(r, g, b).transform(currentColor)
+                      if (!checkChar(sourceIndex, 'm')) fail()
+                      else {
+                        sourceIndex += 1
+                        // Manually perform the `transform` for perf to avoid
+                        // calling `True` which instantiates/allocaties an `Attr`
+                        if(!(0 <= r && r < 256 && 0 <= g && g < 256 && 0 <= b && b < 256)) fail()
+                        else{
+                          currentColor = {
+                            (currentColor & ~category.mask) | category.trueIndex(r, g, b) << category.offset
+                          }
+                        }
                       }
                     }
                   }
@@ -484,11 +501,8 @@ object Attrs{
       while(categoryIndex < categoryArray.length){
         val cat = categoryArray(categoryIndex)
         if ((cat.mask & currentState2) != (cat.mask & nextState)){
-          val attr = cat.lookupAttr(nextState & cat.mask)
-
-          if (attr.escapeOpt.isDefined) {
-            output.append(attr.escapeOpt.get)
-          }
+          val escape = cat.lookupEscape(nextState & cat.mask)
+          output.append(escape)
         }
         categoryIndex += 1
       }
@@ -590,7 +604,7 @@ object Attr{
   */
 case class EscapeAttr private[fansi](escape: String, resetMask: Long, applyMask: Long)
                                     (implicit sourceName: sourcecode.Name) extends Attr{
-  def escapeOpt = Some(escape)
+  val escapeOpt = Some(escape)
   val name = sourceName.value
   override def toString = escape + name + Console.RESET
 }
@@ -600,7 +614,7 @@ case class EscapeAttr private[fansi](escape: String, resetMask: Long, applyMask:
   */
 case class ResetAttr private[fansi](resetMask: Long, applyMask: Long)
                                    (implicit sourceName: sourcecode.Name) extends Attr{
-  def escapeOpt = None
+  val escapeOpt = None
   val name = sourceName.value
   override def toString = name
 }
@@ -615,6 +629,11 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
   def mask = ((1 << width) - 1) << offset
   val all: Vector[Attr]
 
+  def lookupEscape(applyState: Long) = {
+    val escapeOpt = lookupAttr(applyState).escapeOpt
+    if (escapeOpt.isDefined) escapeOpt.get
+    else ""
+  }
   def lookupAttr(applyState: Long) = lookupAttrTable(applyState >> offset toInt)
   // Allows fast lookup of categories based on the desired applyState
   protected[this] lazy val lookupAttrTable = {
@@ -661,11 +680,6 @@ object Underlined extends Category(offset = 2, width = 1){
 
 /**
   * [[Attr]]s to set or reset the color of your foreground text
-  * Color a encoded on 25 bit as follow :
-  * 0 : reset value
-  * 1 - 16 : 4 bit colors
-  * 17 - 273 : 8 bit colors
-  * 274 - 16 777 489 : 24 bit colors
   */
 object Color extends ColorCategory(offset = 3, width = 25, colorCode = 38){
 
@@ -696,11 +710,6 @@ object Color extends ColorCategory(offset = 3, width = 25, colorCode = 38){
 
 /**
   * [[Attr]]s to set or reset the color of your background
-  * Color a encoded on 25 bit as follow :
-  * 0 : reset value
-  * 1 - 16 : 3 bit colors
-  * 17 - 273 : 8 bit colors
-  * 274 - 16 777 389 : 24 bit colors
   */
 object Back extends ColorCategory(offset = 28, width = 25, colorCode = 48){
 
@@ -788,10 +797,17 @@ private[this] final class Trie[T](strings: Seq[(String, T)]){
 }
 
 
-
+/**
+  * * Color a encoded on 25 bit as follow :
+  * 0 : reset value
+  * 1 - 16 : 3 bit colors
+  * 17 - 272 : 8 bit colors
+  * 273 - 16 777 388 : 24 bit colors
+  */
 abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
                             (implicit catName: sourcecode.Name)
                              extends Category (offset, width)(catName){
+
 
 
   /**
@@ -802,24 +818,43 @@ abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
     yield makeAttr(s"\u001b[$colorCode;5;${x}m", 17 + x)(s"Full($x)")
 
   private[this] def True0(r: Int, g: Int, b: Int, index: Int) = {
-    makeAttr("\u001b[" + colorCode + ";2;" + r + ";" + g + ";" + b + "m", 273 + index)("True(" + r + "," + g + "," + b +")")
+    makeAttr(trueRgbEscape(r, g, b), 1 + 16 + 256 + index)("True(" + r + "," + g + "," + b +")")
+  }
+  def trueRgbEscape(r: Int, g: Int, b: Int) = {
+    "\u001b[" + colorCode + ";2;" + r + ";" + g + ";" + b + "m"
   }
   def True(index: Int) = {
+    require(
+      0 <= index && index <= (1 << 24),
+      "True parameter `index` must be 273 <= index <= 16777488, not " + index
+    )
     val r = index >> 16
     val g = (index & 0x00FF00) >> 8
     val b = index & 0x0000FF
     True0(r, g, b, index)
   }
 
-  def True(r: Int, g: Int, b: Int) = {
-    val index = r << 16 | g << 8 | b
-    True0(r, g, b, index)
+  def True(r: Int, g: Int, b: Int) = True0(r, g, b, trueIndex(r, g, b))
+
+  def trueIndex(r: Int, g: Int, b: Int) = {
+    require(0 <= r && r < 256, "True parameter `r` must be 0 <= r < 256, not " + r)
+    require(0 <= g && g < 256, "True parameter `g` must be 0 <= r < 256, not " + g)
+    require(0 <= b && b < 256, "True parameter `b` must be 0 <= r < 256, not " + b)
+    r << 16 | g << 8 | b
   }
 
-  override def lookupAttr(applyState : Long) : Attr = {
-    val index = applyState >> offset
-    if(index < 273) lookupAttrTable(index.toInt)
-    else True(index.toInt - 273)
+  override def lookupEscape(applyState : Long) = {
+    val rawIndex = (applyState >> offset).toInt
+    if(rawIndex < (1 + 16 + 256)) super.lookupEscape(applyState)
+    else {
+      val index = rawIndex - (1 + 16 + 256)
+      trueRgbEscape(r = index >> 16, g = (index & 0x00FF00) >> 8, b = index & 0x0000FF)
+    }
+  }
+  override def lookupAttr(applyState : Long): Attr = {
+    val index = (applyState >> offset).toInt
+    if(index < (1 + 16 + 256)) lookupAttrTable(index)
+    else True(index - 273)
 
   }
 
