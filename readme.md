@@ -167,6 +167,16 @@ The main operations you need to know are:
 - `.render` to convert a `fansi.Str` back into a `java.lang.String` with all
   necessary Ansi color codes within it
 
+Fansi also supports 8-bit 256-colors through `fansi.Color.Full` and
+`fansi.Back.Full`, as well as 24-bit 16-million-colors through
+`fansi.Color.True` and `fansi.Back.True`:
+
+![docs/TrueColor.png](docs/TrueColor.png)
+
+Note that Fansi only performs the rendering of the colors to an ANSI-encoded
+string. Final rendering will depend on whichever terminal you print the string
+to, whether it is able to display these sets of colors or not.
+
 Digging Deeper
 --------------
 
