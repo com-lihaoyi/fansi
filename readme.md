@@ -234,6 +234,13 @@ Scaladoc
 Changelog
 ---------
 
+
+### 0.2.0
+
+- Added the `fansi.Color.True` and `fansi.Back.True` colors, allowing you to
+  specify `Attr`s that represent the 24-bit 16-million-color "True Color"
+  range.
+
 ### 0.1.3
 
 - Fixed a bug in `substring` that incorrectly threw an out of bounds exception

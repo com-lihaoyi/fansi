@@ -823,6 +823,11 @@ abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
   def trueRgbEscape(r: Int, g: Int, b: Int) = {
     "\u001b[" + colorCode + ";2;" + r + ";" + g + ";" + b + "m"
   }
+
+  /**
+    * Create a TrueColor color, from a given index within the 16-million-color
+    * TrueColor range
+    */
   def True(index: Int) = {
     require(
       0 <= index && index <= (1 << 24),
@@ -833,7 +838,10 @@ abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
     val b = index & 0x0000FF
     True0(r, g, b, index)
   }
-
+  /**
+    * Create a TrueColor color, from a given (r, g, b) within the 16-million-color
+    * TrueColor range
+    */
   def True(r: Int, g: Int, b: Int) = True0(r, g, b, trueIndex(r, g, b))
 
   def trueIndex(r: Int, g: Int, b: Int) = {
