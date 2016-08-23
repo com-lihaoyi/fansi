@@ -648,7 +648,7 @@ object Color extends Category(offset = 3, width = 25) with TrueColor{
     * Foreground 256 color [[Attr]]s, for those terminals that support it
     */
   val Full =
-    for(x <- 0 to 256)
+    for(x <- 0 until 256)
     yield makeAttr(s"\u001b[38;5;${x}m", 17 + x)(s"Color.Full($x)")
 
 
@@ -692,7 +692,7 @@ object Back extends Category(offset = 28, width = 25) with TrueColor{
     * Background 256 color [[Attr]]s, for those terminals that support it
     */
   val Full =
-    for(x <- 0 to 256)
+    for(x <- 0 until 256)
     yield makeAttr(s"\u001b[48;5;${x}m", 17 + x)(s"Back.Full($x)")
 
 
@@ -775,20 +775,20 @@ trait TrueColor extends Category {
     val r = hex >> 16
     val g = (hex & 0x00FF00) >> 8
     val b = hex & 0x0000FF
-    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 274 + hex)("True(" + r + "," + g + "," + b +")")
+    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 273 + hex)("True(" + r + "," + g + "," + b +")")
   }
 
   def True(r: Int, g: Int, b: Int) = {
     val i = r << 16 | g << 8 | b
-    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 274 + i)("True(" + r + "," + g + "," + b +")")
+    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 273 + i)("True(" + r + "," + g + "," + b +")")
   }
 
   override def lookupAttr(applyState : Long) : Attr = {
     val index = applyState >> offset
-    if(index < 274 ) {
+    if(index < 273) {
       lookupAttrTable(index.toInt) //I think it's safe if i > 0
     } else {
-      True(index - 274)
+      True(index - 273)
     }
   }
 

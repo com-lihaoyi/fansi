@@ -207,13 +207,13 @@ object FansiTests extends TestSuite{
 
       'trueBackgrounds - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Back.True(i))
 
-      'blackState - assert (fansi.Color.lookupAttr(274 << 3) == fansi.Color.True(0,0,0) )
+      'blackState - assert (fansi.Color.lookupAttr(273 << 3) == fansi.Color.True(0,0,0) )
 
-      'whitState -  assert (fansi.Color.lookupAttr(16777489 << 3) == fansi.Color.True(255,255,255) )
+      'whitState -  assert (fansi.Color.lookupAttr(16777488 << 3) == fansi.Color.True(255,255,255) )
 
-      'redState -  assert (fansi.Color.lookupAttr((0xFF0000 + 274) << 3) == fansi.Color.True(255,0,0))
+      'redState -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 3) == fansi.Color.True(255,0,0))
 
-      'lastFullState - assert ( fansi.Color.lookupAttr(273 << 3) == fansi.Color.Full(256))
+      'lastFullState - assert ( fansi.Color.lookupAttr(272 << 3) == fansi.Color.Full(255))
     }
 
     'emitAnsiCodes{
