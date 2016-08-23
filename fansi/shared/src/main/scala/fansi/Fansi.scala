@@ -623,9 +623,7 @@ object Underlined extends Category(offset = 2, width = 1){
   * 17 - 273 : 8 bit colors
   * 274 - 16 777 489 : 24 bit colors
   */
-object Color extends Category(offset = 3, width = 25) with TrueColor{
-
-  val trueColorCode = 38
+object Color extends ColorCategory(offset = 3, width = 25, colorCode = 38){
 
   val Reset        = makeAttr("\u001b[39m",     0)
   val Black        = makeAttr(Console.BLACK,    1)
@@ -644,13 +642,6 @@ object Color extends Category(offset = 3, width = 25) with TrueColor{
   val LightMagenta = makeAttr("\u001b[95m",    14)
   val LightCyan    = makeAttr("\u001b[96m",    15)
   val White        = makeAttr("\u001b[97m",    16)
-  /**
-    * Foreground 256 color [[Attr]]s, for those terminals that support it
-    */
-  val Full =
-    for(x <- 0 until 256)
-    yield makeAttr(s"\u001b[38;5;${x}m", 17 + x)(s"Color.Full($x)")
-
 
   val all: Vector[Attr] = Vector(
     Reset, Black, Red, Green, Yellow, Blue, Magenta, Cyan, LightGray, DarkGray,
@@ -667,9 +658,7 @@ object Color extends Category(offset = 3, width = 25) with TrueColor{
   * 17 - 273 : 8 bit colors
   * 274 - 16 777 389 : 24 bit colors
   */
-object Back extends Category(offset = 28, width = 25) with TrueColor{
-
-  val trueColorCode = 48
+object Back extends ColorCategory(offset = 28, width = 25, colorCode = 48){
 
   val Reset        = makeAttr("\u001b[49m",       0)
   val Black        = makeAttr(Console.BLACK_B,    1)
@@ -688,20 +677,12 @@ object Back extends Category(offset = 28, width = 25) with TrueColor{
   val LightMagenta = makeAttr("\u001b[105m",     14)
   val LightCyan    = makeAttr("\u001b[106m",     15)
   val White        = makeAttr("\u001b[107m",     16)
-  /**
-    * Background 256 color [[Attr]]s, for those terminals that support it
-    */
-  val Full =
-    for(x <- 0 until 256)
-    yield makeAttr(s"\u001b[48;5;${x}m", 17 + x)(s"Back.Full($x)")
-
 
 
   val all: Vector[Attr] = Vector(
     Reset, Black, Red, Green, Yellow, Blue, Magenta, Cyan, LightGray, DarkGray,
     LightRed, LightGreen, LightYellow, LightBlue, LightMagenta, LightCyan, White
   ) ++ Full
-
 }
 
 
@@ -763,16 +744,20 @@ private[this] final class Trie[T](strings: Seq[(String, T)]){
 
 
 
-trait TrueColor extends Category {
+abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
+                            (implicit catName: sourcecode.Name)
+                             extends Category (offset, width)(catName){
+
+
   /**
-    * Selected Graphic Rendition
-    * 38 : front color
-    * 48 : background color
+    * 256 color [[Attr]]s, for those terminals that support it
     */
-  val trueColorCode : Int
+  val Full =
+    for(x <- 0 until 256)
+    yield makeAttr(s"\u001b[$colorCode;5;${x}m", 17 + x)(s"Full($x)")
 
   private[this] def True0(r: Int, g: Int, b: Int, index: Int) = {
-    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 273 + index)("True(" + r + "," + g + "," + b +")")
+    makeAttr("\u001b[" + colorCode + ";2;" + r + ";" + g + ";" + b + "m", 273 + index)("True(" + r + "," + g + "," + b +")")
   }
   def True(index: Int) = {
     val r = index >> 16
