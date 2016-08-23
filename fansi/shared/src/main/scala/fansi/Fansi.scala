@@ -771,25 +771,26 @@ trait TrueColor extends Category {
     */
   val trueColorCode : Int
 
-  def True(hex: Long) = {
-    val r = hex >> 16
-    val g = (hex & 0x00FF00) >> 8
-    val b = hex & 0x0000FF
-    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 273 + hex)("True(" + r + "," + g + "," + b +")")
+  private[this] def True0(r: Int, g: Int, b: Int, index: Int) = {
+    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 273 + index)("True(" + r + "," + g + "," + b +")")
+  }
+  def True(index: Int) = {
+    val r = index >> 16
+    val g = (index & 0x00FF00) >> 8
+    val b = index & 0x0000FF
+    True0(r, g, b, index)
   }
 
   def True(r: Int, g: Int, b: Int) = {
-    val i = r << 16 | g << 8 | b
-    makeAttr("\u001b[" + trueColorCode + ";2;" + r + ";" + g + ";" + b + "m", 273 + i)("True(" + r + "," + g + "," + b +")")
+    val index = r << 16 | g << 8 | b
+    True0(r, g, b, index)
   }
 
   override def lookupAttr(applyState : Long) : Attr = {
     val index = applyState >> offset
-    if(index < 273) {
-      lookupAttrTable(index.toInt) //I think it's safe if i > 0
-    } else {
-      True(index - 273)
-    }
+    if(index < 273) lookupAttrTable(index.toInt)
+    else True(index.toInt - 273)
+
   }
 
 }
