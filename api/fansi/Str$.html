@@ -93,7 +93,7 @@
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="fansi.Str.State" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="State=Int"></a>
+      <a id="State=Long"></a>
       <a id="State:State"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -101,23 +101,23 @@
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">State</span><span class="result"> = <span class="extype" name="scala.Int">Int</span></span>
+        <span class="name">State</span><span class="result"> = <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Str$@State=Int" title="Permalink" target="_top">
+      <a href="../index.html#fansi.Str$@State=Long" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">An <a href="Str.html" class="extype" name="fansi.Str">fansi.Str</a>'s <code>color</code>s array is filled with Ints, each representing
-the ANSI state of one character encoded in its bits.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="Str.html" class="extype" name="fansi.Str">fansi.Str</a>'s <code>color</code>s array is filled with Ints, each representing
+      <p class="shortcomment cmt">An <a href="Str.html" class="extype" name="fansi.Str">fansi.Str</a>'s <code>color</code>s array is filled with Long, each representing
+the ANSI state of one character encoded in its bits.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="Str.html" class="extype" name="fansi.Str">fansi.Str</a>'s <code>color</code>s array is filled with Long, each representing
 the ANSI state of one character encoded in its bits. Each <a href="Attr.html" class="extype" name="fansi.Attr">Attr</a> belongs
-to a <a href="Category.html" class="extype" name="fansi.Category">Category</a> that occupies a range of bits within each int:</p><p>31... 22 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+to a <a href="Category.html" class="extype" name="fansi.Category">Category</a> that occupies a range of bits within each long:</p><p>61... 55 54  53 52 51 .... 31 30 29 28  27 26 25 ..... 6  5  4  3  2  1  0
  |--------|  |-----------------------|  |-----------------------|  |  |  |bold
           |                          |                          |  |  |reversed
           |                          |                          |  |underlined
           |                          |                          |foreground-color
           |                          |background-color
-          |unused</p><p>The <code>0000 0000 0000 0000</code> int corresponds to plain text with no decoration</p></div></div>
+          |unused</p><p>The <code>0000 0000 0000 0000</code> long corresponds to plain text with no decoration</p></div></div>
     </li></ol>
             </div>
 
@@ -324,7 +324,7 @@ automatically parsed and converted for you.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">fromArrays</span><span class="params">(<span name="chars">chars: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="colors">colors: <span class="extype" name="scala.Array">Array</span>[<a href="#State=Int" class="extmbr" name="fansi.Str.State">State</a>]</span>)</span><span class="result">: <a href="Str.html" class="extype" name="fansi.Str">Str</a></span>
+        <span class="name">fromArrays</span><span class="params">(<span name="chars">chars: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Char">Char</span>]</span>, <span name="colors">colors: <span class="extype" name="scala.Array">Array</span>[<a href="#State=Long" class="extmbr" name="fansi.Str.State">State</a>]</span>)</span><span class="result">: <a href="Str.html" class="extype" name="fansi.Str">Str</a></span>
       </span>
       </h4><span class="permalink">
       <a href="../index.html#fansi.Str$@fromArrays(chars:Array[Char],colors:Array[fansi.Str.State]):fansi.Str" title="Permalink" target="_top">

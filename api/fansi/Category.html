@@ -56,7 +56,7 @@ in the state <code>Int</code>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="Back$.html" class="extype" name="fansi.Back">Back</a>, <a href="Bold$.html" class="extype" name="fansi.Bold">Bold</a>, <a href="Color$.html" class="extype" name="fansi.Color">Color</a>, <a href="Reversed$.html" class="extype" name="fansi.Reversed">Reversed</a>, <a href="Underlined$.html" class="extype" name="fansi.Underlined">Underlined</a></div>
+            <div class="subClasses hiddenContent"><a href="Back$.html" class="extype" name="fansi.Back">Back</a>, <a href="Bold$.html" class="extype" name="fansi.Bold">Bold</a>, <a href="Color$.html" class="extype" name="fansi.Color">Color</a>, <a href="ColorCategory.html" class="extype" name="fansi.ColorCategory">ColorCategory</a>, <a href="Reversed$.html" class="extype" name="fansi.Reversed">Reversed</a>, <a href="Underlined$.html" class="extype" name="fansi.Underlined">Underlined</a></div>
           </div></div>
         
 
@@ -98,18 +98,18 @@ in the state <code>Int</code>
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
               <ol><li name="fansi.Category#all" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="all:Seq[fansi.Attr]"></a>
-      <a id="all:Seq[Attr]"></a>
+      <a id="all:Vector[fansi.Attr]"></a>
+      <a id="all:Vector[Attr]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">all</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<a href="Attr.html" class="extype" name="fansi.Attr">Attr</a>]</span>
+        <span class="name">all</span><span class="result">: <span class="extype" name="scala.Vector">Vector</span>[<a href="Attr.html" class="extype" name="fansi.Attr">Attr</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Category@all:Seq[fansi.Attr]" title="Permalink" target="_top">
+      <a href="../index.html#fansi.Category@all:Vector[fansi.Attr]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -319,52 +319,86 @@ in the state <code>Int</code>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="fansi.Category#lookupAttr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="lookupAttr(applyState:Int):fansi.Attr"></a>
-      <a id="lookupAttr(Int):Attr"></a>
+      <a id="lookupAttr(applyState:Long):fansi.Attr"></a>
+      <a id="lookupAttr(Long):Attr"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">lookupAttr</span><span class="params">(<span name="applyState">applyState: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="Attr.html" class="extype" name="fansi.Attr">Attr</a></span>
+        <span class="name">lookupAttr</span><span class="params">(<span name="applyState">applyState: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <a href="Attr.html" class="extype" name="fansi.Attr">Attr</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Category@lookupAttr(applyState:Int):fansi.Attr" title="Permalink" target="_top">
+      <a href="../index.html#fansi.Category@lookupAttr(applyState:Long):fansi.Attr" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="fansi.Category#lookupAttrTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="lookupAttrTable:Array[fansi.Attr]"></a>
+      <a id="lookupAttrTable:Array[Attr]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">lazy val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lookupAttrTable</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<a href="Attr.html" class="extype" name="fansi.Attr">Attr</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fansi.Category@lookupAttrTable:Array[fansi.Attr]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[this] </dd></dl></div>
+    </li><li name="fansi.Category#lookupEscape" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="lookupEscape(applyState:Long):String"></a>
+      <a id="lookupEscape(Long):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lookupEscape</span><span class="params">(<span name="applyState">applyState: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fansi.Category@lookupEscape(applyState:Long):String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
     </li><li name="fansi.Category#makeAttr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="makeAttr(s:String,applyValue:Int)(implicitname:sourcecode.Name):fansi.EscapeAttr"></a>
-      <a id="makeAttr(String,Int)(Name):EscapeAttr"></a>
+      <a id="makeAttr(s:String,applyValue:Long)(implicitname:sourcecode.Name):fansi.EscapeAttr"></a>
+      <a id="makeAttr(String,Long)(Name):EscapeAttr"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">makeAttr</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="applyValue">applyValue: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="name">name: <span class="extype" name="sourcecode.Name">Name</span></span>)</span><span class="result">: <a href="EscapeAttr.html" class="extype" name="fansi.EscapeAttr">EscapeAttr</a></span>
+        <span class="name">makeAttr</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="applyValue">applyValue: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="name">name: <span class="extype" name="sourcecode.Name">Name</span></span>)</span><span class="result">: <a href="EscapeAttr.html" class="extype" name="fansi.EscapeAttr">EscapeAttr</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Category@makeAttr(s:String,applyValue:Int)(implicitname:sourcecode.Name):fansi.EscapeAttr" title="Permalink" target="_top">
+      <a href="../index.html#fansi.Category@makeAttr(s:String,applyValue:Long)(implicitname:sourcecode.Name):fansi.EscapeAttr" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
     </li><li name="fansi.Category#makeNoneAttr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="makeNoneAttr(applyValue:Int)(implicitname:sourcecode.Name):fansi.ResetAttr"></a>
-      <a id="makeNoneAttr(Int)(Name):ResetAttr"></a>
+      <a id="makeNoneAttr(applyValue:Long)(implicitname:sourcecode.Name):fansi.ResetAttr"></a>
+      <a id="makeNoneAttr(Long)(Name):ResetAttr"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">makeNoneAttr</span><span class="params">(<span name="applyValue">applyValue: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="name">name: <span class="extype" name="sourcecode.Name">Name</span></span>)</span><span class="result">: <a href="ResetAttr.html" class="extype" name="fansi.ResetAttr">ResetAttr</a></span>
+        <span class="name">makeNoneAttr</span><span class="params">(<span name="applyValue">applyValue: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="name">name: <span class="extype" name="sourcecode.Name">Name</span></span>)</span><span class="result">: <a href="ResetAttr.html" class="extype" name="fansi.ResetAttr">ResetAttr</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#fansi.Category@makeNoneAttr(applyValue:Int)(implicitname:sourcecode.Name):fansi.ResetAttr" title="Permalink" target="_top">
+      <a href="../index.html#fansi.Category@makeNoneAttr(applyValue:Long)(implicitname:sourcecode.Name):fansi.ResetAttr" title="Permalink" target="_top">
         <img src="../lib/permalink.png" alt="Permalink" />
       </a>
     </span>

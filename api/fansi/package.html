@@ -131,6 +131,28 @@ know if this contains multiple <a href="Attr.html" class="extype" name="fansi.At
       <p class="shortcomment cmt">Represents a set of <a href="Attr.html" class="extype" name="fansi.Attr">fansi.Attr</a>s all occupying the same bit-space
 in the state <code>Int</code>
 </p>
+    </li><li name="fansi.ColorCategory" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ColorCategoryextendsCategory"></a>
+      <a id="ColorCategory:ColorCategory"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ColorCategory.html"><span class="name">ColorCategory</span></a><span class="result"> extends <a href="Category.html" class="extype" name="fansi.Category">Category</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#fansi.package@ColorCategoryextendsCategory" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">* Color a encoded on 25 bit as follow :
+0 : reset value
+1 - 16 : 3 bit colors
+17 - 272 : 8 bit colors
+273 - 16 777 388 : 24 bit colors
+</p>
     </li><li name="fansi.ErrorMode" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ErrorModeextendsAnyRef"></a>
       <a id="ErrorMode:ErrorMode"></a>
@@ -260,7 +282,7 @@ and <code>Str.parse</code>) speedups
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Back$.html"><span class="name">Back</span></a><span class="result"> extends <a href="Category.html" class="extype" name="fansi.Category">Category</a></span>
+        <a href="Back$.html"><span class="name">Back</span></a><span class="result"> extends <a href="ColorCategory.html" class="extype" name="fansi.ColorCategory">ColorCategory</a></span>
       </span>
       </h4><span class="permalink">
       <a href="../index.html#fansi.package@Back" title="Permalink" target="_top">
@@ -296,7 +318,7 @@ and <code>Str.parse</code>) speedups
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="Color$.html"><span class="name">Color</span></a><span class="result"> extends <a href="Category.html" class="extype" name="fansi.Category">Category</a></span>
+        <a href="Color$.html"><span class="name">Color</span></a><span class="result"> extends <a href="ColorCategory.html" class="extype" name="fansi.ColorCategory">ColorCategory</a></span>
       </span>
       </h4><span class="permalink">
       <a href="../index.html#fansi.package@Color" title="Permalink" target="_top">
