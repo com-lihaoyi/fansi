@@ -361,7 +361,8 @@ object Str{
                         if(!(0 <= r && r < 256 && 0 <= g && g < 256 && 0 <= b && b < 256)) fail()
                         else{
                           currentColor = {
-                            (currentColor & ~category.mask) | category.trueIndex(r, g, b) << category.offset
+                            (currentColor & ~category.mask) |
+                            ((273 + category.trueIndex(r, g, b)) << category.offset)
                           }
                         }
                       }
@@ -818,7 +819,7 @@ abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
     yield makeAttr(s"\u001b[$colorCode;5;${x}m", 17 + x)(s"Full($x)")
 
   private[this] def True0(r: Int, g: Int, b: Int, index: Int) = {
-    makeAttr(trueRgbEscape(r, g, b), 1 + 16 + 256 + index)("True(" + r + "," + g + "," + b +")")
+    makeAttr(trueRgbEscape(r, g, b), 273 + index)("True(" + r + "," + g + "," + b +")")
   }
   def trueRgbEscape(r: Int, g: Int, b: Int) = {
     "\u001b[" + colorCode + ";2;" + r + ";" + g + ";" + b + "m"
@@ -853,15 +854,15 @@ abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
 
   override def lookupEscape(applyState : Long) = {
     val rawIndex = (applyState >> offset).toInt
-    if(rawIndex < (1 + 16 + 256)) super.lookupEscape(applyState)
+    if(rawIndex < 273) super.lookupEscape(applyState)
     else {
-      val index = rawIndex - (1 + 16 + 256)
+      val index = rawIndex - 273
       trueRgbEscape(r = index >> 16, g = (index & 0x00FF00) >> 8, b = index & 0x0000FF)
     }
   }
   override def lookupAttr(applyState : Long): Attr = {
     val index = (applyState >> offset).toInt
-    if(index < (1 + 16 + 256)) lookupAttrTable(index)
+    if(index < 273) lookupAttrTable(index)
     else True(index - 273)
 
   }

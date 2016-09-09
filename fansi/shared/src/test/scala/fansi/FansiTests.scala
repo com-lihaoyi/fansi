@@ -217,8 +217,9 @@ object FansiTests extends TestSuite{
 
       'parsing - {
         def check(frag: fansi.Str) = {
-          fansi.Str(frag.render) == frag
-          frag
+          val parsed = fansi.Str(frag.render)
+          assert(parsed == frag)
+          parsed
         }
         * - check(fansi.Color.True(255, 0, 0)("lol"))
         * - check(fansi.Color.True(1, 234, 56)("lol"))
