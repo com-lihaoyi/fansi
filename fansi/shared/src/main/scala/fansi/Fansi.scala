@@ -636,17 +636,22 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
     else ""
   }
   def lookupAttr(applyState: Long) = lookupAttrTable(applyState >> offset toInt)
+
   // Allows fast lookup of categories based on the desired applyState
+  protected[this] def lookupTableWidth = 1 << width
+
   protected[this] lazy val lookupAttrTable = {
-    val arr = new Array[Attr](1 << width)
+    val arr = new Array[Attr](lookupTableWidth)
     for(attr <- all){
       arr(attr.applyMask >> offset toInt) = attr
     }
     arr
   }
+
   def makeAttr(s: String, applyValue: Long)(implicit name: sourcecode.Name) = {
     new EscapeAttr(s, mask, applyValue << offset)(catName.value + "." + name.value)
   }
+
   def makeNoneAttr(applyValue: Long)(implicit name: sourcecode.Name) = {
     new ResetAttr(mask, applyValue << offset)(catName.value + "." + name.value)
   }
@@ -866,6 +871,6 @@ abstract class ColorCategory(offset: Int, width: Int, val colorCode: Int)
     else True(index - 273)
 
   }
-
+  override protected[this] def lookupTableWidth = 273
 }
 
