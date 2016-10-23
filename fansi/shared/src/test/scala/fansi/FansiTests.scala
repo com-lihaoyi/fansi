@@ -201,7 +201,7 @@ object FansiTests extends TestSuite{
 
       'bluehaxe - fansi.Color.True(0x0000FF)
 
-      "256 shade of gray" - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
+      "256 shades of gray" - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
 
       'trueColors - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Color.True(i))
 
