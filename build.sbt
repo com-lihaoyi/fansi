@@ -4,7 +4,7 @@ val baseSettings = Seq(
   version := "0.2.3",
 
   scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-RC2"),
+  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0"),
   
   scmInfo := Some(ScmInfo(
     browseUrl = url("https://github.com/lihaoyi/utest"),
@@ -29,7 +29,7 @@ lazy val fansi = crossProject
       case _ => "-target:jvm-1.7"
     }),
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "sourcecode" % "0.2.0",
+      "com.lihaoyi" %%% "sourcecode" % "0.1.3",
       "com.lihaoyi" %%% "utest" % "0.4.4" % "test"
     ),
     testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
