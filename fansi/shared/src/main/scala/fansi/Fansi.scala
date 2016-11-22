@@ -1,6 +1,7 @@
 package fansi
 
 import java.util
+import java.util.regex.Pattern
 
 import scala.annotation.tailrec
 import scala.collection.mutable
@@ -154,6 +155,13 @@ case class Str private(private val chars: Array[Char], private val colors: Array
     */
   def overlay(attrs: Attrs, start: Int = 0, end: Int = length) = {
     overlayAll(Seq((attrs, start, end)))
+  }
+
+  /**
+    * Overlays the desired color over the occurrences of the specified regex
+    */
+  def overlay(attrs: Attrs, regex: String) = {
+    overlayAll(Str.boundsOf(chars, regex).map(bs => (attrs, bs._1, bs._2)))
   }
 
   /**
@@ -412,6 +420,16 @@ object Str{
       "\u001b[48;2;" -> Right(Back)
     )
     new Trie(pairs ++ reset ++ trueColors)
+  }
+
+  private[Str] def boundsOf(string: Array[Char], regex: String): Stream[(Int, Int)] = {
+    val pattern = Pattern.compile(regex)
+    val matcher = pattern.matcher(string)
+    var buffer = mutable.Buffer.empty[(Int, Int)]
+    while (matcher.find) {
+        buffer += ((matcher.start, if (matcher.start == matcher.end) matcher.end + 1 else matcher.end))
+    }
+    buffer.toStream
   }
 }
 

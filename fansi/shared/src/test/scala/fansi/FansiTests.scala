@@ -24,6 +24,7 @@ object FansiTests extends TestSuite{
   val tests = TestSuite{
     val rgbOps = s"+++$R---$G***$B///"
     val rgb = s"$R$G$B"
+    val text = "would you like to taste a tomato"
     'parsing{
       val r = fansi.Str(rgbOps).render
       assert(
@@ -101,6 +102,41 @@ object FansiTests extends TestSuite{
         val expected = s"+++$R-$Y--$UND*$G**$B///$DCOL$DUND" toVector
 
         assert(overlayed == expected)
+      }
+      'simplePattern{
+        val overlayed = fansi.Str(text).overlay(fansi.Color.Red, "tomato")
+        val expected = s"would you like to taste a ${R}tomato${RTC}"
+        assert(overlayed.render == expected)
+      }
+      'regexPattern{
+        val overlayed = fansi.Str(text).overlay(fansi.Color.Green, "y\\w+")
+        val expected = s"would ${G}you${RTC} like to taste a tomato"
+        assert(overlayed.render == expected)
+      }
+      'missingPattern{
+        val overlayed = fansi.Str(text).overlay(fansi.Color.Yellow, "banana")
+        val expected = "would you like to taste a tomato"
+        assert(overlayed.render == expected)
+      }
+      'fullPattern{
+        val overlayed = fansi.Str(text).overlay(fansi.Color.Red, "would you like to taste a tomato")
+        val expected = s"${R}would you like to taste a tomato${RTC}"
+        assert(overlayed.render == expected)
+      }
+      'endingPattern{
+        val overlayed = fansi.Str(text).overlay(fansi.Color.Red, "mato")
+        val expected = s"would you like to taste a to${R}mato${RTC}"
+        assert(overlayed.render == expected)
+      }
+      'recurringSimplePattern{
+        val overlayed = fansi.Str(text).overlay(fansi.Color.Red, "to")
+        val expected = s"would you like ${R}to${RTC} taste a ${R}to${RTC}ma${R}to${RTC}"
+        assert(overlayed.render == expected)
+      }
+      'recurringRegexPattern{
+        val overlayed = fansi.Str(text).overlay(fansi.Color.Red, "[t|y]\\w+")
+        val expected = s"would ${R}you${RTC} like ${R}to${RTC} ${R}taste${RTC} a ${R}tomato${RTC}"
+        assert(overlayed.render == expected)
       }
       'underlines{
         val resetty = s"$UND#$RES    $UND#$RES"
