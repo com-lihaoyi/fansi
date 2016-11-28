@@ -7,6 +7,8 @@ Fansi 0.2.3 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
 
 ![LandingExample](docs/LandingExample.png)
 
+[![Join the chat at https://gitter.im/lihaoyi/fansi](https://badges.gitter.im/lihaoyi/fansi.svg)](https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ```scala
 "com.lihaoyi" %% "fansi" % "0.2.3"
 "com.lihaoyi" %%% "fansi" % "0.2.3" // Scala.js
