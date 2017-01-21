@@ -1,9 +1,11 @@
-Fansi 0.2.3 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
+Fansi [![Latest Version]][scaladex-url] [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
 ======================================================================
 [Gitter Chat]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [Build Status]: https://travis-ci.org/lihaoyi/fansi.svg
 [travis-url]: https://travis-ci.org/lihaoyi/fansi
+[Latest Version]: https://index.scala-lang.org/lihaoyi/fansi/fansi/latest.svg?color=orange
+[scaladex-url]: https://index.scala-lang.org/lihaoyi/fansi/fansi
 
 ![LandingExample](docs/LandingExample.png)
 
