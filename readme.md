@@ -253,7 +253,7 @@ Changelog
 ### 0.2.4
 
 - Added `fansi.Str.join`, `fansi.Str#getChar`, `fansi.Str#getColor`
-- Created a [Patreon Page][patreon-link] ([![Patreon][patreon-badge]][patreon-link])
+- Created a [Patreon Page][patreon-link]
   to raise money to try and fund the development of Fansi, PPrint, Ammonite and my other
   open-source libraries. If you've use these libraries in the past and enjoyed doing so,
   please [chip in][patreon-link] to support development!
