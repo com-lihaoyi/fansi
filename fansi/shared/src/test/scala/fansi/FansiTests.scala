@@ -43,6 +43,48 @@ object FansiTests extends TestSuite{
 
       assert(concated == expected)
     }
+    'join{
+      val concated = fansi.Str.join(fansi.Str(rgbOps), fansi.Str(rgbOps)).render
+      val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
+
+      assert(concated == expected)
+    }
+    'get{
+      val str = fansi.Str(rgbOps)
+      val w = fansi.Attrs.Empty.transform(0)
+      val r = fansi.Color.Red.transform(0)
+      val g = fansi.Color.Green.transform(0)
+      val b = fansi.Color.Blue.transform(0)
+      assert(
+        str.getChars.mkString == "+++---***///",
+        str.getChar(0) == '+',
+        str.getChar(1) == '+',
+        str.getChar(2) == '+',
+        str.getChar(3) == '-',
+        str.getChar(4) == '-',
+        str.getChar(5) == '-',
+        str.getChar(6) == '*',
+        str.getChar(7) == '*',
+        str.getChar(8) == '*',
+        str.getChar(9) == '/',
+        str.getChar(10) == '/',
+        str.getChar(11) == '/',
+        str.getColors.toSeq == Seq(w,w,w,r,r,r,g,g,g,b,b,b),
+        str.getColor(0) == w,
+        str.getColor(1) == w,
+        str.getColor(2) == w,
+        str.getColor(3) == r,
+        str.getColor(4) == r,
+        str.getColor(5) == r,
+        str.getColor(6) == g,
+        str.getColor(7) == g,
+        str.getColor(8) == g,
+        str.getColor(9) == b,
+        str.getColor(10) == b,
+        str.getColor(11) == b
+      )
+
+    }
 
     'split{
       val splits = Seq(

@@ -183,8 +183,11 @@ Digging Deeper
 If you want to dig into deeper, there are a few more APIs you can use:
 
 
-- `getColors` and `getChars` methods on `fansi.Str` to extract the raw data 
-  for your own use
+- `fansi.Str.join(args: fansi.Str*)` to conveniently join together multiple
+  `fansi.Str`s all at once, more efficient than `++` for large numbers of 
+   inputs
+- `getColors`/`getColor` and `getChars`/`getChar` methods on `fansi.Str` to 
+  extract the raw data for your own use
 - `fansi.Str.fromArrays` to piece it back together 
 
 This allows you to perform fast, mutable array operations on the 

@@ -102,11 +102,20 @@ case class Str private(private val chars: Array[Char], private val colors: Array
     * you want to use it to
     */
   def getColors = colors.clone()
+
+  /**
+    * Retrieve the color of this string at the given character index
+    */
+  def getColor(i: Int) = colors(i)
   /**
     * Returns a copy of the character array backing this `fansi.Str`, in case
     * you want to use it to
     */
   def getChars = chars.clone()
+  /**
+    * Retrieve the character of this string at the given character index
+    */
+  def getChar(i: Int) = chars(i)
 
   /**
     * Converts this [[fansi.Str]] into a `java.lang.String`, including all
@@ -188,61 +197,6 @@ case class Str private(private val chars: Array[Char], private val colors: Array
   }
 }
 
-/**
-  * Used to control what kind of behavior you get if the a `CharSequence` you
-  * are trying to parse into a [[fansi.Str]] contains an Ansi escape not
-  * recognized by Fansi as a valid color.
-  */
-sealed trait ErrorMode{
-  /**
-    * Given an unknown Ansi escape was found at `sourceIndex` inside your
-    * `raw: CharSequence`, what index should you resume parsing at?
-    */
-  def handle(sourceIndex: Int, raw: CharSequence): Int
-}
-object ErrorMode{
-  /**
-    * Throw an exception and abort the parse
-    */
-  case object Throw extends ErrorMode{
-    def handle(sourceIndex: Int, raw: CharSequence) = {
-      val matcher = Str.ansiRegex.matcher(raw)
-      val detail =
-        if (!matcher.find(sourceIndex)) ""
-        else {
-          val end = matcher.end()
-          " " + raw.subSequence(sourceIndex + 1, end)
-        }
-
-      throw new IllegalArgumentException(
-        s"Unknown ansi-escape$detail at index $sourceIndex " +
-          "inside string cannot be parsed into an fansi.Str"
-      )
-    }
-  }
-  /**
-    * Skip the `\u001b` that kicks off the unknown Ansi escape but leave
-    * subsequent characters in place, so the end-user can see that an Ansi
-    * escape was entered e.g. via the [A[B[A[C that appears in the result
-    */
-  case object Sanitize extends ErrorMode{
-    def handle(sourceIndex: Int, raw: CharSequence) = {
-      sourceIndex + 1
-    }
-  }
-
-  /**
-    * Find the end of the unknown Ansi escape and skip over it's characters
-    * entirely, so no trace of them appear in the parsed fansi.Str.
-    */
-  case object Strip extends ErrorMode{
-    def handle(sourceIndex: Int, raw: CharSequence) = {
-      val matcher = Str.ansiRegex.matcher(raw)
-      matcher.find(sourceIndex)
-      matcher.end()
-    }
-  }
-}
 object Str{
 
   /**
@@ -362,7 +316,7 @@ object Str{
                         else{
                           currentColor = {
                             (currentColor & ~category.mask) |
-                            ((273 + category.trueIndex(r, g, b)) << category.offset)
+                              ((273 + category.trueIndex(r, g, b)) << category.offset)
                           }
                         }
                       }
@@ -398,6 +352,22 @@ object Str{
     new fansi.Str(chars.clone(), colors.clone())
   }
 
+  def join(args: Str*) = {
+    val length = args.iterator.map(_.length).sum
+    val chars = new Array[Char](length)
+    val colors = new Array[State](length)
+    var j = 0
+    for (arg <- args){
+      var i = 0
+      while (i < arg.length){
+        chars(j) = arg.getChar(i)
+        colors(j) = arg.getColor(i)
+        i += 1
+        j += 1
+      }
+    }
+    fromArrays(chars, colors)
+  }
   private[this] val ParseMap = {
     val pairs = for {
       cat <- Attr.categories
@@ -412,6 +382,63 @@ object Str{
       "\u001b[48;2;" -> Right(Back)
     )
     new Trie(pairs ++ reset ++ trueColors)
+  }
+}
+
+
+/**
+  * Used to control what kind of behavior you get if the a `CharSequence` you
+  * are trying to parse into a [[fansi.Str]] contains an Ansi escape not
+  * recognized by Fansi as a valid color.
+  */
+sealed trait ErrorMode{
+  /**
+    * Given an unknown Ansi escape was found at `sourceIndex` inside your
+    * `raw: CharSequence`, what index should you resume parsing at?
+    */
+  def handle(sourceIndex: Int, raw: CharSequence): Int
+}
+object ErrorMode{
+  /**
+    * Throw an exception and abort the parse
+    */
+  case object Throw extends ErrorMode{
+    def handle(sourceIndex: Int, raw: CharSequence) = {
+      val matcher = Str.ansiRegex.matcher(raw)
+      val detail =
+        if (!matcher.find(sourceIndex)) ""
+        else {
+          val end = matcher.end()
+          " " + raw.subSequence(sourceIndex + 1, end)
+        }
+
+      throw new IllegalArgumentException(
+        s"Unknown ansi-escape$detail at index $sourceIndex " +
+          "inside string cannot be parsed into an fansi.Str"
+      )
+    }
+  }
+  /**
+    * Skip the `\u001b` that kicks off the unknown Ansi escape but leave
+    * subsequent characters in place, so the end-user can see that an Ansi
+    * escape was entered e.g. via the [A[B[A[C that appears in the result
+    */
+  case object Sanitize extends ErrorMode{
+    def handle(sourceIndex: Int, raw: CharSequence) = {
+      sourceIndex + 1
+    }
+  }
+
+  /**
+    * Find the end of the unknown Ansi escape and skip over it's characters
+    * entirely, so no trace of them appear in the parsed fansi.Str.
+    */
+  case object Strip extends ErrorMode{
+    def handle(sourceIndex: Int, raw: CharSequence) = {
+      val matcher = Str.ansiRegex.matcher(raw)
+      matcher.find(sourceIndex)
+      matcher.end()
+    }
   }
 }
 
