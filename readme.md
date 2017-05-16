@@ -1,9 +1,12 @@
-Fansi 0.2.4 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url]
+Fansi 0.2.4 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url] [![Patreon][patreon-badge]][patreon-link]
 ======================================================================
 [Gitter Chat]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [Build Status]: https://travis-ci.org/lihaoyi/fansi.svg
 [travis-url]: https://travis-ci.org/lihaoyi/fansi
+
+[patreon-badge]: https://img.shields.io/badge/patreon-sponsor-ff69b4.svg
+[patreon-link]: https://www.patreon.com/lihaoyi
 
 ![LandingExample](docs/LandingExample.png)
 
@@ -246,9 +249,15 @@ Scaladoc
 
 Changelog
 ---------
+
 ### 0.2.4
 
 - Added `fansi.Str.join`, `fansi.Str#getChar`, `fansi.Str#getColor`
+- Created a [Patreon Page][patreon-link] ([![Patreon][patreon-badge]][patreon-link])
+  to raise money to try and fund the development of Fansi, PPrint, Ammonite and my other
+  open-source libraries. If you've use these libraries in the past and enjoyed doing so,
+  please [chip in][patreon-link] to support development!
+
 
 ### 0.2.3
 
