@@ -5,6 +5,8 @@ import utest._
 
 object FansiTests extends TestSuite{
 
+  override def testValueColor = ufansi.Attrs.Empty
+
   // Alias a bunch of rendered attributes to short names
   // to use in all our test cases
   val R = fansi.Color.Red.escape
@@ -266,6 +268,7 @@ object FansiTests extends TestSuite{
         * - check(fansi.Color.True(255, 0, 0)("lol"))
         * - check(fansi.Color.True(1, 234, 56)("lol"))
         * - check(fansi.Color.True(255, 255, 255)("lol"))
+        * - check(fansi.Color.True(10000)("lol"))
         * - {
           (for(i <- 0 to 255) yield check(fansi.Color.True(i,i,i)("x"))).mkString
         }

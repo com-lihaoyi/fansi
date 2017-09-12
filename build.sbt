@@ -1,14 +1,14 @@
 val baseSettings = Seq(
   organization := "com.lihaoyi",
   name := "fansi",
-  version := "0.2.4",
+  version := "0.2.5",
 
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.3",
   crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0"),
   homepage := Some(url("https://github.com/lihaoyi/fansi")),  
   scmInfo := Some(ScmInfo(
-    browseUrl = url("https://github.com/lihaoyi/utest"),
-    connection = "scm:git:git@github.com:lihaoyi/utest.git"
+    browseUrl = url("https://github.com/lihaoyi/fansi"),
+    connection = "scm:git:git@github.com:lihaoyi/fansi.git"
   )),
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   developers += Developer(
@@ -21,7 +21,7 @@ val baseSettings = Seq(
 
 baseSettings
 
-lazy val fansi = crossProject
+lazy val fansi = _root_.sbtcrossproject.CrossPlugin.autoImport.crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(baseSettings)
   .settings(
     scalacOptions ++= Seq(scalaBinaryVersion.value match {
@@ -29,8 +29,8 @@ lazy val fansi = crossProject
       case _ => "-target:jvm-1.7"
     }),
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "sourcecode" % "0.1.3",
-      "com.lihaoyi" %%% "utest" % "0.4.4" % "test"
+      "com.lihaoyi" %%% "sourcecode" % "0.1.4",
+      "com.lihaoyi" %%% "utest" % "0.5.3" % "test"
     ),
     testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
     publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
@@ -38,6 +38,11 @@ lazy val fansi = crossProject
   .jsSettings(
     scalaJSUseRhino in Global := false
   )
+  .nativeSettings(
+    scalaVersion := "2.11.11",
+    nativeLinkStubs := true
+  )
 
 lazy val fansiJVM = fansi.jvm
 lazy val fansiJS = fansi.js
+lazy val fansiNative = fansi.native
