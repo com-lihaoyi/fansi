@@ -12,7 +12,7 @@ Fansi 0.2.4 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url] [![Patreo
 
 ```scala
 "com.lihaoyi" %% "fansi" % "0.2.4"
-"com.lihaoyi" %%% "fansi" % "0.2.4" // Scala.js
+"com.lihaoyi" %%% "fansi" % "0.2.4" // Scala.js or Scala-Native
 ```
 
 Fansi is a Scala library to make it easy to deal with fancy colored Ansi 
@@ -249,6 +249,10 @@ Scaladoc
 
 Changelog
 ---------
+
+### 0.2.5
+
+- Support for Scala-Native
 
 ### 0.2.4
 
