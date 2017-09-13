@@ -195,7 +195,6 @@ object FansiTests extends TestSuite{
     }
     'attributes{
       * - {
-        throw new Exception("Hi from Scala-Native!")
         Console.RESET + fansi.Underlined.On
       }
       * - {
