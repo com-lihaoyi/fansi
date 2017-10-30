@@ -5,8 +5,6 @@ import utest._
 
 object FansiTests extends TestSuite{
 
-  override def testValueColor = ufansi.Attrs.Empty
-
   // Alias a bunch of rendered attributes to short names
   // to use in all our test cases
   val R = fansi.Color.Red.escape

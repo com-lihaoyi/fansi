@@ -34,7 +34,7 @@ lazy val fansi = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     }),
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "sourcecode" % "0.1.4",
-      "com.lihaoyi" %%% "utest" % "0.5.3" % "test"
+      "com.lihaoyi" %%% "utest" % "0.6.5" % "test"
     ),
     testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
     publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
