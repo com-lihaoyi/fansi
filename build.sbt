@@ -27,6 +27,7 @@ baseSettings
 lazy val fansi = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(baseSettings)
   .settings(
+    scalacOptions += "-feature",
     scalacOptions ++= Seq(scalaBinaryVersion.value match {
       case x if x.startsWith("2.12") => "-target:jvm-1.8"
       case _ => "-target:jvm-1.7"
