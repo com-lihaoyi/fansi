@@ -2,6 +2,8 @@ package fansi
 
 import java.util
 
+import scala.language.implicitConversions
+
 import scala.annotation.tailrec
 import scala.collection.mutable
 
@@ -662,7 +664,7 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
     if (escapeOpt.isDefined) escapeOpt.get
     else ""
   }
-  def lookupAttr(applyState: Long) = lookupAttrTable(applyState >> offset toInt)
+  def lookupAttr(applyState: Long) = lookupAttrTable((applyState >> offset).toInt)
 
   // Allows fast lookup of categories based on the desired applyState
   protected[this] def lookupTableWidth = 1 << width
@@ -670,7 +672,7 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
   protected[this] lazy val lookupAttrTable = {
     val arr = new Array[Attr](lookupTableWidth)
     for(attr <- all){
-      arr(attr.applyMask >> offset toInt) = attr
+      arr((attr.applyMask >> offset).toInt) = attr
     }
     arr
   }
