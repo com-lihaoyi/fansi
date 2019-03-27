@@ -4,7 +4,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 val baseSettings = Seq(
   organization := "com.lihaoyi",
   name := "fansi",
-  version := "0.2.5",
+  version := "0.2.6",
 
   scalaVersion := "2.12.8",
   crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-M5"),
