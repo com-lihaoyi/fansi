@@ -17,7 +17,7 @@ val baseSettings = Seq(
   name := "fansi",
 
   scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-M5")
+  crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-RC1")
 )
 
 baseSettings
@@ -31,8 +31,8 @@ lazy val fansi = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       case _ => "-target:jvm-1.7"
     }),
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "sourcecode" % "0.1.5",
-      "com.lihaoyi" %%% "utest" % "0.6.6" % "test"
+      "com.lihaoyi" %%% "sourcecode" % "0.1.6",
+      "com.lihaoyi" %%% "utest" % "0.6.7" % "test"
     ),
     testFrameworks := Seq(new TestFramework("utest.runner.Framework"))
   )
