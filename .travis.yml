@@ -1,9 +1,23 @@
 language: scala
+git:
+  depth: false
+cache:
+  directories:
+  - $HOME/.cache
+  - $HOME/.ivy2/cache
+  - $HOME/.sbt
 script:
 - sbt ++$TRAVIS_SCALA_VERSION fansiJVM/test fansiJS/test
-scala:
-  - 2.10.7
-  - 2.11.12
-  - 2.12.8
-  - 2.13.0-M5
 sudo: false
+stages:
+  - name: test
+  - name: release
+    if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
+jobs:
+  include:
+    - scala: 2.10.7
+    - scala: 2.11.12
+    - scala: 2.12.8
+    - scala: 2.13.0-M5
+    - stage: release
+      script: sbt ci-release
