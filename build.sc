@@ -2,7 +2,7 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 
 
 trait FansiModule extends PublishModule {
-  def artifactName = "Fansi"
+  def artifactName = "fansi"
 
   def publishVersion = "0.2.7"
 
