@@ -1,10 +1,10 @@
 val baseSettings = Seq(
   organization := "com.lihaoyi",
   name := "fansi",
-  version := "0.2.5",
+  version := "0.2.6",
 
   scalaVersion := "2.12.3",
-  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0"),
+  crossScalaVersions := Seq("2.12.0", "2.13.0"),
   homepage := Some(url("https://github.com/lihaoyi/fansi")),  
   scmInfo := Some(ScmInfo(
     browseUrl = url("https://github.com/lihaoyi/fansi"),
@@ -29,8 +29,8 @@ lazy val fansi = _root_.sbtcrossproject.CrossPlugin.autoImport.crossProject(JSPl
       case _ => "-target:jvm-1.7"
     }),
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "sourcecode" % "0.1.4",
-      "com.lihaoyi" %%% "utest" % "0.5.3" % "test"
+      "com.lihaoyi" %%% "sourcecode" % "0.1.7",
+      "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
     ),
     testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
     publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
@@ -40,6 +40,7 @@ lazy val fansi = _root_.sbtcrossproject.CrossPlugin.autoImport.crossProject(JSPl
   )
   .nativeSettings(
     scalaVersion := "2.11.11",
+    crossScalaVersions := Seq("2.11.11"),
     nativeLinkStubs := true
   )
 

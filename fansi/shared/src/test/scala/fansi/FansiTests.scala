@@ -5,8 +5,6 @@ import utest._
 
 object FansiTests extends TestSuite{
 
-  override def testValueColor = ufansi.Attrs.Empty
-
   // Alias a bunch of rendered attributes to short names
   // to use in all our test cases
   val R = fansi.Color.Red.escape
@@ -141,8 +139,8 @@ object FansiTests extends TestSuite{
       }
       'mixedResetUnderline{
         val resetty = s"+$RES++$R--$RES-$UND$G***$B///"
-        val overlayed = fansi.Str(resetty).overlay(fansi.Color.Yellow, 4, 7).render toVector
-        val expected = s"+++$R-$Y--$UND*$G**$B///$DCOL$DUND" toVector
+        val overlayed = fansi.Str(resetty).overlay(fansi.Color.Yellow, 4, 7).render.toVector
+        val expected = s"+++$R-$Y--$UND*$G**$B///$DCOL$DUND".toVector
 
         assert(overlayed == expected)
       }
