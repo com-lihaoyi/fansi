@@ -1,15 +1,9 @@
-val baseSettings = Seq(
-  organization := "com.lihaoyi",
-  name := "fansi",
-  version := "0.2.6",
+// shadow sbt-scalajs' crossProject and CrossType from Scala.js 0.6.x
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-  scalaVersion := "2.12.3",
-  crossScalaVersions := Seq("2.12.0", "2.13.0"),
-  homepage := Some(url("https://github.com/lihaoyi/fansi")),  
-  scmInfo := Some(ScmInfo(
-    browseUrl = url("https://github.com/lihaoyi/fansi"),
-    connection = "scm:git:git@github.com:lihaoyi/fansi.git"
-  )),
+inThisBuild(List(
+  organization := "com.lihaoyi",
+  homepage := Some(url("https://github.com/lihaoyi/fansi")),
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   developers += Developer(
     email = "haoyi.sg@gmail.com",
@@ -17,13 +11,21 @@ val baseSettings = Seq(
     name = "Li Haoyi",
     url = url("https://github.com/lihaoyi")
   )
+))
+
+val baseSettings = Seq(
+  name := "fansi",
+
+  scalaVersion := "2.12.8",
+  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0")
 )
 
 baseSettings
 
-lazy val fansi = _root_.sbtcrossproject.CrossPlugin.autoImport.crossProject(JSPlatform, JVMPlatform, NativePlatform)
+lazy val fansi = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(baseSettings)
   .settings(
+    scalacOptions += "-feature",
     scalacOptions ++= Seq(scalaBinaryVersion.value match {
       case x if x.startsWith("2.12") => "-target:jvm-1.8"
       case _ => "-target:jvm-1.7"
@@ -32,18 +34,16 @@ lazy val fansi = _root_.sbtcrossproject.CrossPlugin.autoImport.crossProject(JSPl
       "com.lihaoyi" %%% "sourcecode" % "0.1.7",
       "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
     ),
-    testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
-    publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
-  )
-  .jsSettings(
-    scalaJSUseRhino in Global := false
+    testFrameworks := Seq(new TestFramework("utest.runner.Framework"))
   )
   .nativeSettings(
-    scalaVersion := "2.11.11",
-    crossScalaVersions := Seq("2.11.11"),
+    scalaVersion := "2.11.12",
+    crossScalaVersions := Seq("2.11.12"),
     nativeLinkStubs := true
   )
 
 lazy val fansiJVM = fansi.jvm
 lazy val fansiJS = fansi.js
 lazy val fansiNative = fansi.native
+
+skip.in(publish) := true // don't publish root project

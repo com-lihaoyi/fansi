@@ -2,6 +2,8 @@ package fansi
 
 import java.util
 
+import scala.language.implicitConversions
+
 import scala.annotation.tailrec
 import scala.collection.mutable
 
