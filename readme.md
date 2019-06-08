@@ -250,7 +250,7 @@ Scaladoc
 Changelog
 ---------
 
-### 0.2.6
+### 0.2.7
 
 - Support for Scala 2.13.0 final
 

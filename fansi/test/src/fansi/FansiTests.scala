@@ -212,17 +212,21 @@ object FansiTests extends TestSuite{
       }
     }
     def tabulate(all: Seq[fansi.Attr]) = {
-      all.map(attr => attr.toString + " " * (30 - attr.name.length))
+      println(
+        all.map(attr => attr.toString + " " * (30 - attr.name.length))
         .grouped(3)
         .map(_.mkString)
         .mkString("\n")
+      )
     }
 
     def square(all : Seq[fansi.Attr]) = {
-      all.map( attr => attr.escapeOpt.getOrElse("") + "#")
+      println(
+        all.map( attr => attr.escapeOpt.getOrElse("") + "#")
         .grouped(32)
         .map(_.mkString)
         .mkString("\n")
+      )
     }
 
 
@@ -245,9 +249,9 @@ object FansiTests extends TestSuite{
 
       "256 shades of gray" - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
 
-      'trueColors - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Color.True(i))
+      'trueColors - tabulate(for(i <- Range(0, 0xFFFFFF, 10000)) yield fansi.Color.True(i))
 
-      'trueBackgrounds - tabulate(for(i <- 0 to 0xFFFFFF by 255) yield fansi.Back.True(i))
+      'trueBackgrounds - tabulate(for(i <- Range(0, 0xFFFFFF, 10000)) yield fansi.Back.True(i))
 
       'blackState - assert (fansi.Color.lookupAttr(273 << 3) == fansi.Color.True(0,0,0) )
 
@@ -261,20 +265,21 @@ object FansiTests extends TestSuite{
         def check(frag: fansi.Str) = {
           val parsed = fansi.Str(frag.render)
           assert(parsed == frag)
-          parsed
+          print(parsed)
         }
         * - check(fansi.Color.True(255, 0, 0)("lol"))
         * - check(fansi.Color.True(1, 234, 56)("lol"))
         * - check(fansi.Color.True(255, 255, 255)("lol"))
         * - check(fansi.Color.True(10000)("lol"))
         * - {
-          (for(i <- 0 to 255) yield check(fansi.Color.True(i,i,i)("x"))).mkString
+          for(i <- 0 to 255) yield check(fansi.Color.True(i,i,i)("x"))
+          println()
         }
         * - check(
           "#" + fansi.Color.True(127, 126, 0)("lol") + "omg" + fansi.Color.True(127, 126, 0)("wtf")
         )
 
-        * - check(square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i)))
+        * - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
 
 
       }
