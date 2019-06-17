@@ -40,7 +40,7 @@ trait FansiMainModule extends CrossScalaModule {
 trait FansiTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.6.9")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.1")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 

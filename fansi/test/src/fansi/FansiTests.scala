@@ -24,7 +24,7 @@ object FansiTests extends TestSuite{
   val tests = TestSuite{
     val rgbOps = s"+++$R---$G***$B///"
     val rgb = s"$R$G$B"
-    'parsing{
+    test("parsing"){
       val r = fansi.Str(rgbOps).render
       assert(
         fansi.Str(rgbOps).plainText == "+++---***///",
@@ -34,22 +34,22 @@ object FansiTests extends TestSuite{
       )
     }
 
-    'equality{
+    test("equality"){
       assert(fansi.Color.Red("foo") == fansi.Color.Red("foo"))
     }
-    'concat{
+    test("concat"){
       val concated = (fansi.Str(rgbOps) ++ fansi.Str(rgbOps)).render
       val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
 
       assert(concated == expected)
     }
-    'join{
+    test("join"){
       val concated = fansi.Str.join(fansi.Str(rgbOps), fansi.Str(rgbOps)).render
       val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
 
       assert(concated == expected)
     }
-    'get{
+    test("get"){
       val str = fansi.Str(rgbOps)
       val w = fansi.Attrs.Empty.transform(0)
       val r = fansi.Color.Red.transform(0)
@@ -86,7 +86,7 @@ object FansiTests extends TestSuite{
 
     }
 
-    'split{
+    test("split"){
       val splits = Seq(
         // These are the standard series
         (0,  s"", s"+++$R---$G***$B///$RTC"),
@@ -111,7 +111,7 @@ object FansiTests extends TestSuite{
         assert((left, right) == (expectedLeft, expectedRight))
       }
     }
-    'substring{
+    test("substring"){
       val substringed = fansi.Str(rgbOps).substring(4, 9).render
       assert(substringed == s"$R--$G***$RTC")
 
@@ -125,60 +125,60 @@ object FansiTests extends TestSuite{
       assert(noOpSubstringed2 == default)
     }
 
-    'overlay{
-      'simple{
+    test("overlay"){
+      test("simple"){
         val overlayed = fansi.Str(rgbOps).overlay(fansi.Color.Yellow, 4, 7)
         val expected = s"+++$R-$Y--*$G**$B///$RTC"
         assert(overlayed.render == expected)
       }
-      'resetty{
+      test("resetty"){
         val resetty = s"+$RES++$R--$RES-$RES$G***$B///"
         val overlayed = fansi.Str(resetty).overlay(fansi.Color.Yellow, 4, 7).render
         val expected = s"+++$R-$Y--*$G**$B///$RTC"
         assert(overlayed == expected)
       }
-      'mixedResetUnderline{
+      test("mixedResetUnderline"){
         val resetty = s"+$RES++$R--$RES-$UND$G***$B///"
         val overlayed = fansi.Str(resetty).overlay(fansi.Color.Yellow, 4, 7).render.toVector
         val expected = s"+++$R-$Y--$UND*$G**$B///$DCOL$DUND".toVector
 
         assert(overlayed == expected)
       }
-      'underlines{
+      test("underlines"){
         val resetty = s"$UND#$RES    $UND#$RES"
-        'underlineBug{
+        test("underlineBug"){
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 0, 2).render
           val expected = s"$UND$REV#$DUND $DREV   $UND#$DUND"
           assert(overlayed == expected)
         }
-        'barelyOverlapping{
+        test("barelyOverlapping"){
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 0, 1).render
           val expected = s"$UND$REV#$DUND$DREV    $UND#$DUND"
           assert(overlayed == expected)
         }
-        'endOfLine{
+        test("endOfLine"){
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 5, 6).render
           val expected = s"$UND#$DUND    $UND$REV#$DUND$DREV"
           assert(overlayed == expected)
         }
-        'overshoot{
+        test("overshoot"){
           intercept[IllegalArgumentException]{
             fansi.Str(resetty).overlay(fansi.Reversed.On, 5, 10)
           }
         }
-        'empty{
+        test("empty"){
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 0, 0).render
           val expected = s"$UND#$DUND    $UND#$DUND"
           assert(overlayed == expected)
         }
-        'singleContent{
+        test("singleContent"){
           val overlayed = fansi.Str(resetty).overlay(fansi.Reversed.On, 2, 4).render
           val expected = s"$UND#$DUND $REV  $DREV $UND#$DUND"
           assert(overlayed == expected)
 
         }
       }
-      'overallAll{
+      test("overallAll"){
         //s"+++$R---$G***$B///"
         val overlayed = fansi.Str(rgbOps).overlayAll(Seq(
           (fansi.Color.Yellow, 4, 7),
@@ -191,23 +191,23 @@ object FansiTests extends TestSuite{
         overlayed
       }
     }
-    'attributes{
-      * - {
+    test("attributes"){
+      test{
         Console.RESET + fansi.Underlined.On
       }
-      * - {
+      test{
         Console.RESET + (fansi.Underlined.On("Reset ") ++ fansi.Underlined.Off("Underlined"))
       }
-      * - {
+      test{
         Console.RESET + fansi.Bold.On
       }
-      * - {
+      test{
         Console.RESET + (fansi.Bold.On("Reset ") ++ fansi.Bold.Off("Bold"))
       }
-      * - {
+      test{
         Console.RESET + fansi.Reversed.On
       }
-      * - {
+      test{
         Console.RESET + (fansi.Reversed.On("Reset ") ++ fansi.Reversed.Off("Reversed"))
       }
     }
@@ -230,98 +230,98 @@ object FansiTests extends TestSuite{
     }
 
 
-    'colors - tabulate(fansi.Color.all)
+    test("colors") - tabulate(fansi.Color.all)
 
-    'backgrounds - tabulate(fansi.Back.all)
+    test("backgrounds") - tabulate(fansi.Back.all)
 
-    'trueColor - {
-      'red - fansi.Color.True(255,0,0)
+    test("trueColor"){
+      test("red") - fansi.Color.True(255,0,0)
 
-      'redhexa - fansi.Color.True(0xFF0000)
+      test("redhexa") - fansi.Color.True(0xFF0000)
 
-      'green - fansi.Color.True(0,255,0)
+      test("green") - fansi.Color.True(0,255,0)
 
-      'greenhexa - fansi.Color.True(0x00FF00)
+      test("greenhexa") - fansi.Color.True(0x00FF00)
 
-      'blue - fansi.Color.True(0,0,255)
+      test("blue") - fansi.Color.True(0,0,255)
 
-      'bluehaxe - fansi.Color.True(0x0000FF)
+      test("bluehaxe") - fansi.Color.True(0x0000FF)
 
-      "256 shades of gray" - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
+      test("256 shades of gray") - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
 
-      'trueColors - tabulate(for(i <- Range(0, 0xFFFFFF, 10000)) yield fansi.Color.True(i))
+      test("trueColors") - tabulate(for(i <- Range(0, 0xFFFFFF, 10000)) yield fansi.Color.True(i))
 
-      'trueBackgrounds - tabulate(for(i <- Range(0, 0xFFFFFF, 10000)) yield fansi.Back.True(i))
+      test("trueBackgrounds") - tabulate(for(i <- Range(0, 0xFFFFFF, 10000)) yield fansi.Back.True(i))
 
-      'blackState - assert (fansi.Color.lookupAttr(273 << 3) == fansi.Color.True(0,0,0) )
+      test("blackState") - assert (fansi.Color.lookupAttr(273 << 3) == fansi.Color.True(0,0,0) )
 
-      'whitState -  assert (fansi.Color.lookupAttr(16777488 << 3) == fansi.Color.True(255,255,255) )
+      test("whitState") -  assert (fansi.Color.lookupAttr(16777488 << 3) == fansi.Color.True(255,255,255) )
 
-      'redState -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 3) == fansi.Color.True(255,0,0))
+      test("redState") -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 3) == fansi.Color.True(255,0,0))
 
-      'lastFullState - assert ( fansi.Color.lookupAttr(272 << 3) == fansi.Color.Full(255))
+      test("lastFullState") - assert ( fansi.Color.lookupAttr(272 << 3) == fansi.Color.Full(255))
 
-      'parsing - {
+      test("parsing"){
         def check(frag: fansi.Str) = {
           val parsed = fansi.Str(frag.render)
           assert(parsed == frag)
           print(parsed)
         }
-        * - check(fansi.Color.True(255, 0, 0)("lol"))
-        * - check(fansi.Color.True(1, 234, 56)("lol"))
-        * - check(fansi.Color.True(255, 255, 255)("lol"))
-        * - check(fansi.Color.True(10000)("lol"))
-        * - {
+        test - check(fansi.Color.True(255, 0, 0)("lol"))
+        test - check(fansi.Color.True(1, 234, 56)("lol"))
+        test - check(fansi.Color.True(255, 255, 255)("lol"))
+        test - check(fansi.Color.True(10000)("lol"))
+        test{
           for(i <- 0 to 255) yield check(fansi.Color.True(i,i,i)("x"))
           println()
         }
-        * - check(
+        test - check(
           "#" + fansi.Color.True(127, 126, 0)("lol") + "omg" + fansi.Color.True(127, 126, 0)("wtf")
         )
 
-        * - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
+        test - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
 
 
       }
-      'failure{
-        'tooLongToParse{
-          * - intercept[IllegalArgumentException]{
+      test("failure"){
+        test("tooLongToParse"){
+          test - intercept[IllegalArgumentException]{
             fansi.Str("\u001b[38;2;0;0;256m").plainText.toSeq.map(_.toInt)
           }
-          * - intercept[IllegalArgumentException]{
+          test - intercept[IllegalArgumentException]{
             fansi.Str("\u001b[38;2;0;256;0m").plainText.toSeq.map(_.toInt)
           }
-          * - intercept[IllegalArgumentException]{
+          test - intercept[IllegalArgumentException]{
             fansi.Str("\u001b[38;2;256;0;0m").plainText.toSeq.map(_.toInt)
           }
-          * - intercept[IllegalArgumentException]{
+          test - intercept[IllegalArgumentException]{
             fansi.Str("\u001b[38;2;1111;0;0m").plainText.toSeq.map(_.toInt)
           }
         }
-        'truncatedParsing - {
+        test("truncatedParsing"){
           val escape = fansi.Color.True(255, 0, 0).escape
           for (i <- 1 until escape.length - 1)
           yield intercept[IllegalArgumentException] {
             fansi.Str(escape.dropRight(i))
           }
         }
-        'args{
-          * - intercept[IllegalArgumentException]{ fansi.Color.True(256, 0, 0) }
-          * - intercept[IllegalArgumentException]{ fansi.Color.True(0, 256, 0) }
-          * - intercept[IllegalArgumentException]{ fansi.Color.True(0, 0, 256) }
-          * - intercept[IllegalArgumentException]{ fansi.Color.True(-1, 0, 0) }
-          * - intercept[IllegalArgumentException]{ fansi.Color.True(0, -1, 0) }
-          * - intercept[IllegalArgumentException]{ fansi.Color.True(0, 0, -1) }
+        test("args"){
+          test - intercept[IllegalArgumentException]{ fansi.Color.True(256, 0, 0) }
+          test - intercept[IllegalArgumentException]{ fansi.Color.True(0, 256, 0) }
+          test - intercept[IllegalArgumentException]{ fansi.Color.True(0, 0, 256) }
+          test - intercept[IllegalArgumentException]{ fansi.Color.True(-1, 0, 0) }
+          test - intercept[IllegalArgumentException]{ fansi.Color.True(0, -1, 0) }
+          test - intercept[IllegalArgumentException]{ fansi.Color.True(0, 0, -1) }
         }
       }
     }
 
-    'emitAnsiCodes{
-      'basic - assert(
+    test("emitAnsiCodes"){
+      test("basic") - assert(
         fansi.Attrs.emitAnsiCodes(0, fansi.Color.Red.applyMask) == Console.RED,
         fansi.Attrs.emitAnsiCodes(fansi.Color.Red.applyMask, 0) == fansi.Color.Reset.escape
       )
-      'combo - {
+      test("combo"){
         // One color stomps over the other
         val colorColor = fansi.Color.Red ++ fansi.Color.Blue
         assert(fansi.Attrs.emitAnsiCodes(0, colorColor.applyMask) == Console.BLUE)
@@ -335,8 +335,8 @@ object FansiTests extends TestSuite{
 
     }
 
-    'negative{
-      'errorMode{
+    test("negative"){
+      test("errorMode"){
         // Make sure that fansi.Str throws on most common non-color
         // fansi terminal commands
         //
@@ -359,27 +359,27 @@ object FansiTests extends TestSuite{
           assert(stripped.plainText == "HelloWorld")
         }
 
-        'cursorUp - check("Hello\u001b[2AWorld", "[2A")
-        'cursorDown- check("Hello\u001b[2BWorld", "[2B")
-        'cursorForward - check("Hello\u001b[2CWorld", "[2C")
-        'cursorBack - check("Hello\u001b[2DWorld", "[2D")
-        'cursorNextLine - check("Hello\u001b[2EWorld", "[2E")
-        'cursorPrevLine - check("Hello\u001b[2FWorld", "[2F")
-        'cursorHorizontalAbs - check("Hello\u001b[2GWorld", "[2G")
-        'cursorPosition- check("Hello\u001b[2;2HWorld", "[2;2H")
-        'eraseDisplay - check("Hello\u001b[2JWorld", "[2J")
-        'eraseLine - check("Hello\u001b[2KWorld", "[2K")
-        'scrollUp - check("Hello\u001b[2SWorld", "[2S")
-        'scrollDown - check("Hello\u001b[2TWorld", "[2T")
-        'horizontalVerticalPos - check("Hello\u001b[2;2fWorld", "[2;2f")
-        'selectGraphicRendition - check("Hello\u001b[2mWorld", "[2m")
-        'auxPortOn - check("Hello\u001b[5iWorld", "[5i")
-        'auxPortOff - check("Hello\u001b[4iWorld", "[4i")
-        'deviceStatusReport - check("Hello\u001b[6nWorld", "[6n")
-        'saveCursor - check("Hello\u001b[sWorld", "[s")
-        'restoreCursor - check("Hello\u001b[uWorld", "[u")
+        test("cursorUp") - check("Hello\u001b[2AWorld", "[2A")
+        test("cursorDown") - check("Hello\u001b[2BWorld", "[2B")
+        test("cursorForward") - check("Hello\u001b[2CWorld", "[2C")
+        test("cursorBack") - check("Hello\u001b[2DWorld", "[2D")
+        test("cursorNextLine") - check("Hello\u001b[2EWorld", "[2E")
+        test("cursorPrevLine") - check("Hello\u001b[2FWorld", "[2F")
+        test("cursorHorizontalAbs") - check("Hello\u001b[2GWorld", "[2G")
+        test("cursorPosition") - check("Hello\u001b[2;2HWorld", "[2;2H")
+        test("eraseDisplay") - check("Hello\u001b[2JWorld", "[2J")
+        test("eraseLine") - check("Hello\u001b[2KWorld", "[2K")
+        test("scrollUp") - check("Hello\u001b[2SWorld", "[2S")
+        test("scrollDown") - check("Hello\u001b[2TWorld", "[2T")
+        test("horizontalVerticalPos") - check("Hello\u001b[2;2fWorld", "[2;2f")
+        test("selectGraphicRendition") - check("Hello\u001b[2mWorld", "[2m")
+        test("auxPortOn") - check("Hello\u001b[5iWorld", "[5i")
+        test("auxPortOff") - check("Hello\u001b[4iWorld", "[4i")
+        test("deviceStatusReport") - check("Hello\u001b[6nWorld", "[6n")
+        test("saveCursor") - check("Hello\u001b[sWorld", "[s")
+        test("restoreCursor") - check("Hello\u001b[uWorld", "[u")
       }
-      'outOfBounds{
+      test("outOfBounds"){
         intercept[IllegalArgumentException]{ fansi.Str("foo").splitAt(10) }
         intercept[IllegalArgumentException]{ fansi.Str("foo").splitAt(4) }
         intercept[IllegalArgumentException]{ fansi.Str("foo").splitAt(-1) }
@@ -388,22 +388,22 @@ object FansiTests extends TestSuite{
         intercept[IllegalArgumentException]{ fansi.Str("foo").substring(2, 1)}
       }
     }
-    'multipleAttrs{
-      'identicalMasksGetCollapsed{
+    test("multipleAttrs"){
+      test("identicalMasksGetCollapsed"){
         val redRed = fansi.Color.Red ++ fansi.Color.Red
         assert(
           redRed.resetMask == fansi.Color.Red.resetMask,
           redRed.applyMask == fansi.Color.Red.applyMask
         )
       }
-      'overlappingMasksGetReplaced{
+      test("overlappingMasksGetReplaced"){
         val redBlue = fansi.Color.Red ++ fansi.Color.Blue
         assert(
           redBlue.resetMask == fansi.Color.Blue.resetMask,
           redBlue.applyMask == fansi.Color.Blue.applyMask
         )
       }
-      'semiOverlappingMasks{
+      test("semiOverlappingMasks"){
         val resetRed = fansi.Attr.Reset ++ fansi.Color.Red
         val redReset = fansi.Color.Red ++ fansi.Attr.Reset
         assert(
@@ -416,7 +416,7 @@ object FansiTests extends TestSuite{
           resetRed.applyMask == fansi.Color.Red.applyMask
         )
       }
-      'separateMasksGetCombined{
+      test("separateMasksGetCombined"){
         val redBold = fansi.Color.Red ++ fansi.Bold.On
 
         assert(
@@ -424,13 +424,13 @@ object FansiTests extends TestSuite{
           redBold.applyMask == (fansi.Color.Red.applyMask | fansi.Bold.On.applyMask)
         )
       }
-      'applicationWorks{
+      test("applicationWorks"){
         val redBlueBold = fansi.Color.Red ++ fansi.Color.Blue ++ fansi.Bold.On
         val colored = redBlueBold("Hello World")
         val separatelyColored = fansi.Bold.On(fansi.Color.Blue(fansi.Color.Red("Hello World")))
         assert(colored.render == separatelyColored.render)
       }
-      'equality{
+      test("equality"){
         assert(
           fansi.Color.Blue ++ fansi.Color.Red == fansi.Color.Red,
           fansi.Color.Red == fansi.Color.Blue ++ fansi.Color.Red,
@@ -439,10 +439,10 @@ object FansiTests extends TestSuite{
         )
       }
     }
-//    'perf{
+//    test("perf"){
 //      val input = s"+++$R---$G***$B///" * 1000
 //
-//      'parsing{
+//      test("parsing"){
 //
 //        val start = System.currentTimeMillis()
 //        var count = 0
@@ -453,7 +453,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'rendering{
+//      test("rendering"){
 //
 //        val start = System.currentTimeMillis()
 //        var count = 0
@@ -465,7 +465,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'concat{
+//      test("concat"){
 //        val start = System.currentTimeMillis()
 //        var count = 0
 //        val fansiStr = fansi.Str(input)
@@ -476,7 +476,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'splitAt{
+//      test("splitAt"){
 //        val start = System.currentTimeMillis()
 //        var count = 0
 //        val fansiStr = fansi.Str(input)
@@ -487,7 +487,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'substring{
+//      test("substring"){
 //        val start = System.currentTimeMillis()
 //        var count = 0
 //        val fansiStr = fansi.Str(input)
@@ -500,7 +500,7 @@ object FansiTests extends TestSuite{
 //        val end = System.currentTimeMillis()
 //        count
 //      }
-//      'overlay{
+//      test("overlay"){
 //        val start = System.currentTimeMillis()
 //        var count = 0
 //        val fansiStr = fansi.Str(input)
