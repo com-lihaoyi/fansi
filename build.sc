@@ -4,7 +4,7 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 trait FansiModule extends PublishModule {
   def artifactName = "fansi"
 
-  def publishVersion = "0.2.7"
+  def publishVersion = "0.2.8"
 
   def pomSettings = PomSettings(
     description = artifactName(),
@@ -22,7 +22,7 @@ trait FansiModule extends PublishModule {
 }
 trait FansiMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.1.7")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.0")
   def offset: os.RelPath = os.rel
   def sources = T.sources(
     super.sources()
@@ -40,7 +40,7 @@ trait FansiMainModule extends CrossScalaModule {
 trait FansiTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.1")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.3")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
@@ -67,7 +67,7 @@ object fansi extends Module {
   }
 
   object js extends Cross[JsFansiModule](
-    ("2.12.8", "0.6.26"), ("2.13.0", "0.6.28")/*, ("2.12.8", "1.0.0-M8"), ("2.13.0", "1.0.0-M8")*/
+    ("2.12.8", "0.6.31"), ("2.13.0", "0.6.31"), ("2.12.8", "1.0.0-RC2"), ("2.13.0", "1.0.0-RC2")
   )
   class JsFansiModule(val crossScalaVersion: String, crossJSVersion: String)
     extends FansiMainModule with ScalaJSModule with FansiModule {
