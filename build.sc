@@ -58,7 +58,7 @@ trait FansiTestModule extends ScalaModule with TestModule {
 }
 
 object fansi extends Module {
-  object jvm extends Cross[JvmFansiModule]("2.12.8", "2.13.0")
+  object jvm extends Cross[JvmFansiModule]("2.12.10", "2.13.1")
   class JvmFansiModule(val crossScalaVersion: String)
     extends FansiMainModule with ScalaModule with FansiModule {
     object test extends Tests with FansiTestModule{
@@ -67,7 +67,7 @@ object fansi extends Module {
   }
 
   object js extends Cross[JsFansiModule](
-    ("2.12.8", "0.6.31"), ("2.13.0", "0.6.31"), ("2.12.8", "1.0.0"), ("2.13.0", "1.0.0")
+    ("2.12.10", "0.6.32"), ("2.13.1", "0.6.32"), ("2.12.10", "1.0.0"), ("2.13.1", "1.0.0")
   )
   class JsFansiModule(val crossScalaVersion: String, crossJSVersion: String)
     extends FansiMainModule with ScalaJSModule with FansiModule {
@@ -78,8 +78,8 @@ object fansi extends Module {
       val crossScalaVersion = JsFansiModule.this.crossScalaVersion
     }
   }
-  /*
-  object native extends Cross[NativeFansiModule](("2.11.12", "0.3.8")/*, ("2.11.12", "0.4.0-M2")*/)
+
+  object native extends Cross[NativeFansiModule](("2.11.12", "0.3.9"), ("2.11.12", "0.4.0-M2"))
   class NativeFansiModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
     extends FansiMainModule with ScalaNativeModule with FansiModule {
     def offset = os.up
@@ -89,5 +89,5 @@ object fansi extends Module {
       def offset = os.up
       val crossScalaVersion = NativeFansiModule.this.crossScalaVersion
     }
-  }*/
+  }
 }
