@@ -67,7 +67,10 @@ trait FansiTestModule extends ScalaModule with TestModule {
 }
 
 object fansi extends Module {
-  object jvm extends Cross[JvmFansiModule]("2.12.10", "2.13.1", "0.24.0-RC1")
+
+  val dottyVersion = Option(sys.props("dottyVersion"))
+
+  object jvm extends Cross[JvmFansiModule]((List("2.12.10", "2.13.1", "0.24.0-RC1") ++ dottyVersion): _*)
   class JvmFansiModule(val crossScalaVersion: String)
     extends FansiMainModule with ScalaModule with FansiModule {
     object test extends Tests with FansiTestModule{
