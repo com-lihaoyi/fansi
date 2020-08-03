@@ -13,9 +13,4 @@ jdk:
 
 script:
   - curl https://raw.githubusercontent.com/scala-native/scala-native/b7851c4dc2a22c9fd9202aea3d97e2a68910b918/scripts/travis_setup.sh | bash -x
-  # TODO: remove these later
-  - git clone --depth 1 https://github.com/lihaoyi/sourcecode.git
-  - cd sourcecode && ./mill sourcecode.jvm[0.24.0-RC1].publishLocal && cd ..
-  - git clone --depth 1 https://github.com/lihaoyi/utest.git
-  - cd utest && ./mill utest.jvm[0.24.0-RC1].publishLocal && cd ..
   - ./mill -i __.__.test
