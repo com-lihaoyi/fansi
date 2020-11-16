@@ -49,7 +49,7 @@ trait FansiMainModule extends CrossScalaModule {
 trait FansiTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.4")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.5")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
@@ -70,7 +70,7 @@ object fansi extends Module {
 
   val dottyVersion = Option(sys.props("dottyVersion"))
 
-  object jvm extends Cross[JvmFansiModule]((List("2.12.10", "2.13.1", "0.27.0-RC1") ++ dottyVersion): _*)
+  object jvm extends Cross[JvmFansiModule]((List("2.12.10", "2.13.1", "3.0.0-M1") ++ dottyVersion): _*)
   class JvmFansiModule(val crossScalaVersion: String)
     extends FansiMainModule with ScalaModule with FansiModule {
     object test extends Tests with FansiTestModule{
