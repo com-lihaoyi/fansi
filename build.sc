@@ -1,5 +1,19 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 
+val dottyVersions = sys.props.get("dottyVersion").toList
+
+val scalaVersions = "2.11.12" :: "2.12.13" :: "2.13.4" :: "3.0.0-M3" :: dottyVersions
+val scala2Versions = scalaVersions.filter(_.startsWith("2."))
+
+val scalaJSVersions = for {
+  scalaV <- scala2Versions
+  scalaJSV <- Seq("0.6.33", "1.4.0")
+} yield (scalaV, scalaJSV)
+
+val scalaNativeVersions = for {
+  scalaV <- scala2Versions
+  scalaNativeV <- Seq("0.4.0")
+} yield (scalaV, scalaNativeV)
 
 trait FansiModule extends PublishModule {
   def artifactName = "fansi"
@@ -22,7 +36,7 @@ trait FansiModule extends PublishModule {
 }
 trait FansiMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.1")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.2")
   def offset: os.RelPath = os.rel
   def sources = T.sources(
     super.sources()
@@ -49,7 +63,7 @@ trait FansiMainModule extends CrossScalaModule {
 trait FansiTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.5")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.6")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
@@ -67,10 +81,7 @@ trait FansiTestModule extends ScalaModule with TestModule {
 }
 
 object fansi extends Module {
-
-  val dottyVersion = Option(sys.props("dottyVersion"))
-
-  object jvm extends Cross[JvmFansiModule]((List("2.12.10", "2.13.1", "3.0.0-M2") ++ dottyVersion): _*)
+  object jvm extends Cross[JvmFansiModule](scalaVersions:_*)
   class JvmFansiModule(val crossScalaVersion: String)
     extends FansiMainModule with ScalaModule with FansiModule {
     object test extends Tests with FansiTestModule{
@@ -78,9 +89,7 @@ object fansi extends Module {
     }
   }
 
-  object js extends Cross[JsFansiModule](
-    ("2.12.10", "0.6.32"), ("2.13.1", "0.6.32"), ("2.12.10", "1.0.0"), ("2.13.1", "1.0.0")
-  )
+  object js extends Cross[JsFansiModule](scalaJSVersions:_*)
   class JsFansiModule(val crossScalaVersion: String, crossJSVersion: String)
     extends FansiMainModule with ScalaJSModule with FansiModule {
     def offset = os.up
@@ -91,7 +100,7 @@ object fansi extends Module {
     }
   }
 
-  object native extends Cross[NativeFansiModule](("2.11.12", "0.3.9"), ("2.11.12", "0.4.0-M2"))
+  object native extends Cross[NativeFansiModule](scalaNativeVersions:_*)
   class NativeFansiModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
     extends FansiMainModule with ScalaNativeModule with FansiModule {
     def offset = os.up
