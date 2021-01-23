@@ -18,7 +18,7 @@ val scalaNativeVersions = for {
 trait FansiModule extends PublishModule {
   def artifactName = "fansi"
 
-  def publishVersion = "0.2.9"
+  def publishVersion = "0.2.10"
 
   def pomSettings = PomSettings(
     description = artifactName(),
