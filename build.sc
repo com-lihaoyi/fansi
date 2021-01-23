@@ -36,7 +36,7 @@ trait FansiModule extends PublishModule {
 }
 trait FansiMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.2")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.3")
   def offset: os.RelPath = os.rel
   def sources = T.sources(
     super.sources()
@@ -63,7 +63,7 @@ trait FansiMainModule extends CrossScalaModule {
 trait FansiTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.6")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.7")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
