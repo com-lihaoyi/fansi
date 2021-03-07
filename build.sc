@@ -8,8 +8,9 @@ val scalaVersions = "2.11.12" :: "2.12.13" :: "2.13.4" :: "3.0.0-RC1" :: dottyVe
 val scala2Versions = scalaVersions.filter(_.startsWith("2."))
 
 val scalaJSVersions = for {
-  scalaV <- scala2Versions
+  scalaV <- scalaVersions
   scalaJSV <- Seq("0.6.33", "1.4.0")
+  if scalaV.startsWith("2.") || scalaJSV.startsWith("1.")
 } yield (scalaV, scalaJSV)
 
 val scalaNativeVersions = for {
@@ -38,7 +39,7 @@ trait FansiModule extends PublishModule {
 }
 trait FansiMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.3")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.4")
   def offset: os.RelPath = os.rel
   def sources = T.sources(
     super.sources()
@@ -49,16 +50,6 @@ trait FansiMainModule extends CrossScalaModule {
         )
       )
   )
-
-  override def docJar =
-    if (crossScalaVersion.startsWith("2")) super.docJar
-    else T {
-      val outDir = T.ctx().dest
-      val javadocDir = outDir / 'javadoc
-      os.makeDir.all(javadocDir)
-      mill.api.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
-    }
-
 }
 
 
