@@ -4,7 +4,7 @@ import de.tobiasroeser.mill.vcs.version.VcsVersion
 
 val dottyVersions = sys.props.get("dottyVersion").toList
 
-val scalaVersions = "2.11.12" :: "2.12.13" :: "2.13.4" :: "3.0.0-RC2" :: dottyVersions
+val scalaVersions = "2.11.12" :: "2.12.13" :: "2.13.4" :: "3.0.0-RC3" :: dottyVersions
 val scala2Versions = scalaVersions.filter(_.startsWith("2."))
 
 val scalaJSVersions = for {
@@ -39,7 +39,7 @@ trait FansiModule extends PublishModule {
 }
 trait FansiMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.5")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.6")
   def offset: os.RelPath = os.rel
   def sources = T.sources(
     super.sources()
@@ -56,7 +56,7 @@ trait FansiMainModule extends CrossScalaModule {
 trait FansiTestModule extends ScalaModule with TestModule {
   def crossScalaVersion: String
   def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.8")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.9")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
