@@ -250,6 +250,10 @@ Scaladoc
 Changelog
 ---------
 
+### 0.2.14
+
+- Support for Scala 3.0.0
+
 ### 0.2.12
 
 - Support for Scala 3.0.0-RC2
