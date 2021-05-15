@@ -9,7 +9,7 @@ val scala2Versions = scalaVersions.filter(_.startsWith("2."))
 
 val scalaJSVersions = for {
   scalaV <- scalaVersions
-  scalaJSV <- Seq("0.6.33", "1.4.0")
+  scalaJSV <- Seq("0.6.33", "1.5.1")
   if scalaV.startsWith("2.") || scalaJSV.startsWith("1.")
 } yield (scalaV, scalaJSV)
 
@@ -53,10 +53,9 @@ trait FansiMainModule extends CrossScalaModule {
 }
 
 
-trait FansiTestModule extends ScalaModule with TestModule {
+trait FansiTestModule extends ScalaModule with TestModule.Utest {
   def crossScalaVersion: String
-  def testFrameworks = Seq("utest.runner.Framework")
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.9")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.10")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
