@@ -349,14 +349,22 @@ object FansiTests extends TestSuite{
             fansi.Str(s, errorMode = fansi.ErrorMode.Throw)
           }
           assert(thrownError.getMessage.contains(msg))
+          val thrownError2 = intercept[IllegalArgumentException]{
+            fansi.Str.Throw(s)
+          }
+          assert(thrownError2.getMessage.contains(msg))
           // If I ask it to sanitize, the escape character is gone but the
           // rest of each escape sequence remains
           val sanitized = fansi.Str(s, errorMode = fansi.ErrorMode.Sanitize)
           assert(sanitized.plainText == ("Hello" + msg + "World"))
+          val sanitized2 = fansi.Str.Sanitize(s)
+          assert(sanitized2.plainText == ("Hello" + msg + "World"))
 
           // If I ask it to strip, everything is gone
           val stripped = fansi.Str(s, errorMode = fansi.ErrorMode.Strip)
           assert(stripped.plainText == "HelloWorld")
+          val stripped2 = fansi.Str.Strip(s)
+          assert(stripped2.plainText == "HelloWorld")
         }
 
         test("cursorUp") - check("Hello\u001b[2AWorld", "[2A")
