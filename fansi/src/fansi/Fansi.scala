@@ -354,15 +354,25 @@ object Str{
     new fansi.Str(chars.clone(), colors.clone())
   }
 
-  def apply(args: Str*) = {
+  def apply(args: Str*): fansi.Str = {
     join(args)
   }
-  def join(args: TraversableOnce[Str]) = {
-    val length = args.iterator.map(_.length).sum
+  def join(args: Iterable[Str], sep: fansi.Str = fansi.Str("")) = {
+    val length = args.iterator.map(_.length + sep.length).sum - sep.length
     val chars = new Array[Char](length)
     val colors = new Array[State](length)
     var j = 0
     for (arg <- args){
+
+      if (j != 0){
+        var k = 0
+        while (k < sep.length){
+          chars(j) = sep.getChar(k)
+          colors(j) = sep.getColors(k)
+          j += 1
+          k += 1
+        }
+      }
       var i = 0
       while (i < arg.length){
         chars(j) = arg.getChar(i)
