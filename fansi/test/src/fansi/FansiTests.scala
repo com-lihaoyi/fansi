@@ -440,7 +440,9 @@ object FansiTests extends TestSuite{
       }
     }
     test("implicitConstructorOnlyForLiterals"){
-      compileError("""{val x = ""; x: fansi.Str }""")
+      if (scala.util.Properties.versionNumberString.startsWith("2.")){
+        compileError("""{val x = ""; x: fansi.Str }""")
+      }
       "": fansi.Str
     }
 //    test("perf"){
