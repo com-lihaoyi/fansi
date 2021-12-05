@@ -43,8 +43,14 @@ object FansiTests extends TestSuite{
 
       assert(concated == expected)
     }
+    test("apply"){
+      val concated = fansi.Str(fansi.Str(rgbOps), fansi.Str(rgbOps)).render
+      val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
+
+      assert(concated == expected)
+    }
     test("join"){
-      val concated = fansi.Str.join(fansi.Str(rgbOps), fansi.Str(rgbOps)).render
+      val concated = fansi.Str.join(Seq(fansi.Str(rgbOps), fansi.Str(rgbOps))).render
       val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
 
       assert(concated == expected)
