@@ -22,7 +22,7 @@ import scala.collection.mutable
   * giving 20% (on `++`) to >1000% (on `splitAt`, `subString`
   * and `Str.parse`) speedups
   */
-case class Str private(private val chars: Array[Char], private val colors: Array[Str.State]) {
+class Str private(private val chars: Array[Char], private val colors: Array[Str.State]) {
   require(chars.length == colors.length)
   override def hashCode() = util.Arrays.hashCode(chars) + util.Arrays.hashCode(colors)
   override def equals(other: Any) = other match{
@@ -42,7 +42,7 @@ case class Str private(private val chars: Array[Char], private val colors: Array
     System.arraycopy(colors, 0, colors2, 0, length)
     System.arraycopy(other.colors, 0, colors2, length, other.length)
 
-    Str(chars2, colors2)
+    new Str(chars2, colors2)
   }
 
   /**
@@ -335,7 +335,7 @@ object Str{
       }
     }
 
-    Str(
+    new Str(
       util.Arrays.copyOfRange(chars, 0, destIndex),
       util.Arrays.copyOfRange(colors, 0, destIndex)
     )
@@ -354,12 +354,25 @@ object Str{
     new fansi.Str(chars.clone(), colors.clone())
   }
 
-  def join(args: Str*) = {
-    val length = args.iterator.map(_.length).sum
+  def apply(args: Str*): fansi.Str = {
+    join(args)
+  }
+  def join(args: Iterable[Str], sep: fansi.Str = fansi.Str("")) = {
+    val length = args.iterator.map(_.length + sep.length).sum - sep.length
     val chars = new Array[Char](length)
     val colors = new Array[State](length)
     var j = 0
     for (arg <- args){
+
+      if (j != 0){
+        var k = 0
+        while (k < sep.length){
+          chars(j) = sep.getChar(k)
+          colors(j) = sep.getColors(k)
+          j += 1
+          k += 1
+        }
+      }
       var i = 0
       while (i < arg.length){
         chars(j) = arg.getChar(i)

@@ -43,11 +43,40 @@ object FansiTests extends TestSuite{
 
       assert(concated == expected)
     }
-    test("join"){
-      val concated = fansi.Str.join(fansi.Str(rgbOps), fansi.Str(rgbOps)).render
+    test("apply"){
+      val concated = fansi.Str(fansi.Str(rgbOps), fansi.Str(rgbOps)).render
       val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
 
       assert(concated == expected)
+
+      val concated2 = fansi.Str("hello", "world", "i am cow")
+      val concated3 = fansi.Str("helloworld", "i am cow")
+      assert(concated2 == concated3)
+
+      val applied = fansi.Str("hello")
+      assert(applied.plainText == "hello")
+      assert(applied.getColors.forall(_ == 0))
+    }
+    test("join"){
+      val concated = fansi.Str.join(Seq(fansi.Str(rgbOps), fansi.Str(rgbOps))).render
+      val expected = rgbOps ++ RTC ++ rgbOps ++ RTC
+      assert(concated == expected)
+
+      val concated2 = fansi.Str.join(Seq(fansi.Str(rgbOps), fansi.Str("xyz"))).render
+      val expected2 = rgbOps ++ RTC ++ "xyz"
+      assert(concated2 == expected2)
+
+      val concated3 = fansi.Str.join(Seq(fansi.Str(rgbOps)), sep = "lol").render
+      val expected3 = rgbOps ++ RTC
+      assert(concated3 == expected3)
+
+      val concated4 = fansi.Str.join(Seq(fansi.Str(rgbOps), fansi.Str("xyz")), sep = "lol").render
+      val expected4 = rgbOps ++ RTC ++ "lol" ++ "xyz"
+      assert(concated4 == expected4)
+
+      val concated5 = fansi.Str.join(Seq(fansi.Str(rgbOps), fansi.Str("xyz"), fansi.Str(rgbOps)), sep = "lol").render
+      val expected5 = rgbOps ++ RTC ++ "lol" ++ "xyz" ++ "lol" ++ rgbOps ++ RTC
+      assert(concated5 == expected5)
     }
     test("get"){
       val str = fansi.Str(rgbOps)
