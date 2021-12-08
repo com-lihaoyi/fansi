@@ -241,6 +241,14 @@ object Str{
     */
   val ansiRegex = "(\u009b|\u001b\\[)[0-?]*[ -\\/]*[@-~]".r.pattern
 
+  /** Shorthand constructor with ErrorMode.Sanitize */
+  def Sanitize(raw: CharSequence) = apply(raw, ErrorMode.Sanitize)
+
+  /** Shorthand constructor with ErrorMode.Strip */
+  def Strip(raw: CharSequence) = apply(raw, ErrorMode.Strip)
+
+  /** Shorthand constructor with ErrorMode.Throw */
+  def Throw(raw: CharSequence) = apply(raw, ErrorMode.Throw)
   /**
     * Creates an [[fansi.Str]] from a non-fansi `java.lang.String` or other
     * `CharSequence`.
