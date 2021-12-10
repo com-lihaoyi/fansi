@@ -1,4 +1,4 @@
-Fansi 0.2.14 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url] [![Patreon][patreon-badge]][patreon-link]
+Fansi 0.3.0 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url] [![Patreon][patreon-badge]][patreon-link]
 ======================================================================
 [Gitter Chat]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
@@ -11,8 +11,8 @@ Fansi 0.2.14 [![Gitter Chat]][gitter-url] [![Build Status]][travis-url] [![Patre
 ![LandingExample](docs/LandingExample.png)
 
 ```scala
-"com.lihaoyi" %% "fansi" % "0.2.14"
-"com.lihaoyi" %%% "fansi" % "0.2.14" // Scala.js or Scala-Native
+"com.lihaoyi" %% "fansi" % "0.3.0"
+"com.lihaoyi" %%% "fansi" % "0.3.0" // Scala.js or Scala-Native
 ```
 
 Fansi is a Scala library to make it easy to deal with fancy colored Ansi
@@ -186,9 +186,12 @@ Digging Deeper
 If you want to dig into deeper, there are a few more APIs you can use:
 
 
-- `fansi.Str.join(args: fansi.Str*)` to conveniently join together multiple
-  `fansi.Str`s all at once, more efficient than `++` for large numbers of
-   inputs
+- `fansi.Str.apply(args: fansi.Str*)` or
+  `fansi.Str.join(args: Seq[fansi.Str], sep: fansi.Str = fansi.Str(""))`
+  to conveniently join together multiple `fansi.Str`s all at once, more efficient
+  than `++` for large numbers of inputs
+- `fansi.Str.{Sanitize, Strip, Throw}` for constructing `fansi.Str`s while
+  specifying how to handle errors
 - `getColors`/`getColor` and `getChars`/`getChar` methods on `fansi.Str` to
   extract the raw data for your own use
 - `fansi.Str.fromArrays` to piece it back together
@@ -249,6 +252,15 @@ Scaladoc
 
 Changelog
 ---------
+
+### 0.3.0
+
+- Added shorthands for constructing `fansi.Str` with various error modes via
+  `fansi.Str.Throw`, `fansi.Str.Sanitize`, `fansi.Str.Strip`
+- Renamed `fansi.Str.join` to `fansi.Str.apply`, added a new
+  `fansi.Str.join(args: Seq[fansi.Str], sep: fansi.Str = fansi.Str(""))` method
+  in its place
+
 
 ### 0.2.14
 
