@@ -1,23 +1,24 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version_mill0.9:0.1.1`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`com.github.lolgab::mill-mima_mill0.9:0.0.4`
+import $ivy.`com.github.lolgab::mill-mima::0.0.9`
 import com.github.lolgab.mill.mima._
 
 val dottyVersions = sys.props.get("dottyVersion").toList
 
-val scalaVersions = "2.11.12" :: "2.12.13" :: "2.13.4" :: "3.0.0" :: dottyVersions
-val scala2Versions = scalaVersions.filter(_.startsWith("2."))
+val scala2VersionsAndDotty = "2.12.13" :: "2.13.4" :: "2.11.12" :: dottyVersions
+val scala30 = "3.0.2"
+val scala31 = "3.1.1"
 
 val scalaJSVersions = for {
-  scalaV <- scalaVersions
+  scalaV <- scala30 :: scala2VersionsAndDotty
   scalaJSV <- Seq("0.6.33", "1.5.1")
   if scalaV.startsWith("2.") || scalaJSV.startsWith("1.")
 } yield (scalaV, scalaJSV)
 
 val scalaNativeVersions = for {
-  scalaV <- scala2Versions
-  scalaNativeV <- Seq("0.4.0")
+  scalaV <- scala31 :: scala2VersionsAndDotty
+  scalaNativeV <- Seq("0.4.3")
 } yield (scalaV, scalaNativeV)
 
 trait FansiModule extends PublishModule with Mima {
@@ -32,10 +33,7 @@ trait FansiModule extends PublishModule with Mima {
     organization = "com.lihaoyi",
     url = "https://github.com/lihaoyi/Fansi",
     licenses = Seq(License.MIT),
-    scm = SCM(
-      "git://github.com/lihaoyi/Fansi.git",
-      "scm:git://github.com/lihaoyi/Fansi.git"
-    ),
+    versionControl = VersionControl.github(owner = "com-lihaoyi", repo = "fansi"),
     developers = Seq(
       Developer("lihaoyi", "Li Haoyi", "https://github.com/lihaoyi")
     )
@@ -43,7 +41,7 @@ trait FansiModule extends PublishModule with Mima {
 }
 trait FansiMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.7")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.8")
   def offset: os.RelPath = os.rel
   def sources = T.sources(
     super.sources()
@@ -59,7 +57,7 @@ trait FansiMainModule extends CrossScalaModule {
 
 trait FansiTestModule extends ScalaModule with TestModule.Utest {
   def crossScalaVersion: String
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.10")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.11")
   def offset: os.RelPath = os.rel
   def millSourcePath = super.millSourcePath / os.up
 
@@ -77,7 +75,7 @@ trait FansiTestModule extends ScalaModule with TestModule.Utest {
 }
 
 object fansi extends Module {
-  object jvm extends Cross[JvmFansiModule](scalaVersions:_*)
+  object jvm extends Cross[JvmFansiModule](scala30 :: scala2VersionsAndDotty:_*)
   class JvmFansiModule(val crossScalaVersion: String)
     extends FansiMainModule with ScalaModule with FansiModule {
     object test extends Tests with FansiTestModule{
