@@ -42,7 +42,7 @@ trait FansiModule extends PublishModule with MimaCheck {
 }
 trait FansiMainModule extends CrossScalaModule {
   def millSourcePath = super.millSourcePath / offset
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.2.8")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.3.0")
   def offset: os.RelPath = os.rel
   def sources = T.sources(
     super.sources()
