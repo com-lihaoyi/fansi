@@ -1,6 +1,6 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1-6-e80da7`
-import $ivy.`com.github.lolgab::mill-mima::0.0.20`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1-8-37c08a`
+import $ivy.`com.github.lolgab::mill-mima::0.0.21`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import com.github.lolgab.mill.mima._
 import mill.scalalib.api.ZincWorkerUtil.isScala3
@@ -13,11 +13,6 @@ trait FansiModule extends PublishModule with Mima with CrossScalaModule with Pla
   def artifactName = "fansi"
 
   def publishVersion = VcsVersion.vcsState().format()
-
-  // Temporary until the next version of Mima gets released with
-  // https://github.com/lightbend/mima/issues/693 included in the release.
-  def mimaPreviousArtifacts =
-    if(isScala3(crossScalaVersion)) Agg.empty[Dep] else super.mimaPreviousArtifacts()
 
   def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
 
