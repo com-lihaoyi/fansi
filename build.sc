@@ -1,6 +1,6 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1-8-37c08a`
-import $ivy.`com.github.lolgab::mill-mima::0.0.21`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1-14-7e2bd2`
+import $ivy.`com.github.lolgab::mill-mima::0.0.22`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import com.github.lolgab.mill.mima._
 import mill.scalalib.api.ZincWorkerUtil.isScala3
@@ -37,18 +37,18 @@ trait FansiTestModule extends ScalaModule with TestModule.Utest {
 object fansi extends Module {
   object jvm extends Cross[JvmFansiModule](scalaVersions)
   trait JvmFansiModule extends FansiModule with ScalaModule {
-    object test extends Tests with FansiTestModule
+    object test extends ScalaModuleTests with FansiTestModule
   }
 
   object js extends Cross[JsFansiModule](scalaVersions)
   trait JsFansiModule extends FansiModule with ScalaJSModule{
     def scalaJSVersion = "1.10.1"
-    object test extends Tests with FansiTestModule
+    object test extends ScalaJSModuleTests with FansiTestModule
   }
 
   object native extends Cross[NativeFansiModule](scalaVersions)
   trait NativeFansiModule extends FansiModule with ScalaNativeModule{
     def scalaNativeVersion = "0.4.5"
-    object test extends Tests with FansiTestModule
+    object test extends ScalaNativeModuleTests with FansiTestModule
   }
 }
