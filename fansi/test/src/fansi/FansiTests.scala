@@ -305,7 +305,7 @@ object FansiTests extends TestSuite{
           println()
         }
         test - check(
-          "#" + fansi.Color.True(127, 126, 0)("lol") + "omg" + fansi.Color.True(127, 126, 0)("wtf")
+          fansi.Str("#") ++ fansi.Color.True(127, 126, 0)("lol") ++ "omg" ++ fansi.Color.True(127, 126, 0)("wtf")
         )
 
         test - square(for(i <- 0 to 255) yield fansi.Color.True(i,i,i))
@@ -475,6 +475,10 @@ object FansiTests extends TestSuite{
           fansi.Color.Red != fansi.Bold.On ++ fansi.Color.Red
         )
       }
+    }
+    test("implicitConstructorOnlyForLiterals"){
+
+      "": fansi.Str
     }
 //    test("perf"){
 //      val input = s"+++$R---$G***$B///" * 1000
