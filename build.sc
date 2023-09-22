@@ -27,7 +27,7 @@ trait FansiModule extends PublishModule with Mima with CrossScalaModule with Pla
     )
   )
 
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.3.0")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.3.1")
 }
 
 trait FansiTestModule extends ScalaModule with TestModule.Utest {
