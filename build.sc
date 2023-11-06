@@ -31,7 +31,7 @@ trait FansiModule extends PublishModule with Mima with CrossScalaModule with Pla
 }
 
 trait FansiTestModule extends ScalaModule with TestModule.Utest {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.1")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.2")
 }
 
 object fansi extends Module {
