@@ -7,7 +7,7 @@ import mill.scalalib.api.ZincWorkerUtil.isScala3
 
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion")
 
-val scalaVersions = Seq("2.11.12", "2.12.17", "2.13.8", "3.1.3") ++ dottyCommunityBuildVersion
+val scalaVersions = Seq("2.12.17", "2.13.8", "3.3.1") ++ dottyCommunityBuildVersion
 
 trait FansiModule extends PublishModule with Mima with CrossScalaModule with PlatformScalaModule {
   def artifactName = "fansi"
@@ -27,11 +27,11 @@ trait FansiModule extends PublishModule with Mima with CrossScalaModule with Pla
     )
   )
 
-  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.3.0")
+  def ivyDeps = Agg(ivy"com.lihaoyi::sourcecode::0.4.0")
 }
 
 trait FansiTestModule extends ScalaModule with TestModule.Utest {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.1")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.3")
 }
 
 object fansi extends Module {
@@ -42,13 +42,13 @@ object fansi extends Module {
 
   object js extends Cross[JsFansiModule](scalaVersions)
   trait JsFansiModule extends FansiModule with ScalaJSModule{
-    def scalaJSVersion = "1.10.1"
+    def scalaJSVersion = "1.12.0"
     object test extends ScalaJSTests with FansiTestModule
   }
 
   object native extends Cross[NativeFansiModule](scalaVersions)
   trait NativeFansiModule extends FansiModule with ScalaNativeModule{
-    def scalaNativeVersion = "0.4.5"
+    def scalaNativeVersion = "0.5.0"
     object test extends ScalaNativeTests with FansiTestModule
   }
 }
