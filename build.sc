@@ -14,6 +14,10 @@ trait FansiModule extends PublishModule with Mima with CrossScalaModule with Pla
 
   def publishVersion = VcsVersion.vcsState().format()
 
+  def mimaReportBinaryIssues() =
+    if (this.isInstanceOf[ScalaNativeModule] || this.isInstanceOf[ScalaJSModule]) T.command()
+    else super.mimaReportBinaryIssues()
+
   def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
 
   def pomSettings = PomSettings(
