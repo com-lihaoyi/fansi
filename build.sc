@@ -7,7 +7,7 @@ import mill.scalalib.api.ZincWorkerUtil.isScala3
 
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion")
 
-val scalaVersions = Seq("2.12.17", "2.13.8", "3.3.1") ++ dottyCommunityBuildVersion
+val scalaVersions = Seq("2.12.19", "2.13.8", "3.3.1") ++ dottyCommunityBuildVersion
 
 trait FansiModule extends PublishModule with Mima with CrossScalaModule with PlatformScalaModule {
   def artifactName = "fansi"
