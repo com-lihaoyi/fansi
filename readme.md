@@ -1,4 +1,4 @@
-Fansi 0.4.0 [![Gitter Chat]][gitter-url] [![Patreon][patreon-badge]][patreon-link]
+Fansi 0.5.0 [![Gitter Chat]][gitter-url] [![Patreon][patreon-badge]][patreon-link]
 ======================================================================
 [Gitter Chat]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/lihaoyi/fansi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
@@ -11,12 +11,12 @@ Fansi 0.4.0 [![Gitter Chat]][gitter-url] [![Patreon][patreon-badge]][patreon-lin
 
 ```scala
 // SBT
-"com.lihaoyi" %% "fansi" % "0.4.0"
-"com.lihaoyi" %%% "fansi" % "0.4.0" // Scala.js or Scala-Native
+"com.lihaoyi" %% "fansi" % "0.5.0"
+"com.lihaoyi" %%% "fansi" % "0.5.0" // Scala.js or Scala-Native
 
 // Mill
-ivy"com.lihaoyi::fansi:0.4.0"
-ivy"com.lihaoyi::fansi::0.4.0" // Scala.js or Scala-Native
+ivy"com.lihaoyi::fansi:0.5.0"
+ivy"com.lihaoyi::fansi::0.5.0" // Scala.js or Scala-Native
 ```
 
 Fansi is a Scala library to make it easy to deal with fancy colored Ansi
@@ -257,7 +257,7 @@ Scaladoc
 Changelog
 ---------
 
-### master
+### 0.5.0
 
 - Support for Scala-Native 0.5.0
 - Dropped support for Scala 2.11.x
