@@ -257,6 +257,12 @@ Scaladoc
 Changelog
 ---------
 
+### master
+
+- Support for Scala-Native 0.5.0
+- Dropped support for Scala 2.11.x
+- Minimum version of Scala 3 increased to 3.3.1
+
 ### 0.4.0
 
 - Dropped support for Scala.js 0.6
