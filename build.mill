@@ -1,11 +1,11 @@
-//| mill-version: 1.0.0-RC1-24-d74b52
+//| mill-version: 1.0.0
 //| mvnDeps:
-//| - com.github.lolgab::mill-mima_mill1.0.0-RC1:0.2.0-M1
+//| - com.github.lolgab::mill-mima_mill1:0.2.0
 package build
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import mill.main.VcsVersion
+import mill.util.VcsVersion
 import com.github.lolgab.mill.mima._
-import mill.scalalib.api.JvmWorkerUtil.isScala3
+import mill.javalib.api.JvmWorkerUtil.isScala3
 
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion")
 
