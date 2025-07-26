@@ -81,6 +81,10 @@ object FansiTests extends TestSuite{
       val concated6 = fansi.Str.join(Nil, "")
       val expected6 = fansi.Str("")
       assert(concated6 == expected6)
+
+      val concated7 = fansi.Str.join(Nil, ",")
+      val expected7 = fansi.Str(",")
+      assert(concated7 == expected7)
     }
     test("get"){
       val str = fansi.Str(rgbOps)
