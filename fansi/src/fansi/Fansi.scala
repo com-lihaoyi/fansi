@@ -261,7 +261,7 @@ object Str{
     *                  input `CharSequence` contains an Ansi escape not
     *                  recognized by Fansi as a valid color.
     */
-  def apply(raw: CharSequence, errorMode: ErrorMode = ErrorMode.Throw): fansi.Str = {
+  def apply(raw: CharSequence, errorMode: ErrorMode = ErrorMode.Sanitize): fansi.Str = {
     // Pre-allocate some arrays for us to fill up. They will probably be
     // too big if the input has any ansi codes at all but that's ok, we'll
     // trim them later.
@@ -366,7 +366,7 @@ object Str{
     join(args)
   }
   def join(args: Iterable[Str], sep: fansi.Str = fansi.Str("")) = {
-    val length = args.iterator.map(_.length + sep.length).sum - sep.length
+    val length = math.max(0, args.iterator.map(_.length + sep.length).sum - sep.length)
     val chars = new Array[Char](length)
     val colors = new Array[State](length)
     var j = 0
@@ -710,17 +710,18 @@ sealed abstract class Category(val offset: Int, val width: Int)(implicit catName
 /**
   * [[Attr]]s to turn text bold/bright or disable it
   */
-object Bold extends Category(offset = 0, width = 1){
+object Bold extends Category(offset = 0, width = 2){
+  val Faint = makeAttr("\u001b[2m",  2)("Faint")
   val On  = makeAttr(Console.BOLD, 1)
   val Off = makeNoneAttr(          0)
-  val all: Vector[Attr] = Vector(On, Off)
+  val all: Vector[Attr] = Vector(On, Off, Faint)
 }
 
 /**
   * [[Attr]]s to reverse the background/foreground colors of your text,
   * or un-reverse them
   */
-object Reversed extends Category(offset = 1, width = 1){
+object Reversed extends Category(offset = 2, width = 1){
   val On  = makeAttr(Console.REVERSED,   1)
   val Off = makeAttr("\u001b[27m",       0)
   val all: Vector[Attr] = Vector(On, Off)
@@ -728,7 +729,7 @@ object Reversed extends Category(offset = 1, width = 1){
 /**
   * [[Attr]]s to enable or disable underlined text
   */
-object Underlined extends Category(offset = 2, width = 1){
+object Underlined extends Category(offset = 3, width = 1){
   val On  = makeAttr(Console.UNDERLINED, 1)
   val Off = makeAttr("\u001b[24m",       0)
   val all: Vector[Attr] = Vector(On, Off)
@@ -737,7 +738,7 @@ object Underlined extends Category(offset = 2, width = 1){
 /**
   * [[Attr]]s to set or reset the color of your foreground text
   */
-object Color extends ColorCategory(offset = 3, width = 25, colorCode = 38){
+object Color extends ColorCategory(offset = 4, width = 25, colorCode = 38){
 
   val Reset        = makeAttr("\u001b[39m",     0)
   val Black        = makeAttr(Console.BLACK,    1)
@@ -767,7 +768,7 @@ object Color extends ColorCategory(offset = 3, width = 25, colorCode = 38){
 /**
   * [[Attr]]s to set or reset the color of your background
   */
-object Back extends ColorCategory(offset = 28, width = 25, colorCode = 48){
+object Back extends ColorCategory(offset = 29, width = 25, colorCode = 48){
 
   val Reset        = makeAttr("\u001b[49m",       0)
   val Black        = makeAttr(Console.BLACK_B,    1)

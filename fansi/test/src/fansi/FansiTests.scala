@@ -77,6 +77,14 @@ object FansiTests extends TestSuite{
       val concated5 = fansi.Str.join(Seq(fansi.Str(rgbOps), fansi.Str("xyz"), fansi.Str(rgbOps)), sep = "lol").render
       val expected5 = rgbOps ++ RTC ++ "lol" ++ "xyz" ++ "lol" ++ rgbOps ++ RTC
       assert(concated5 == expected5)
+
+      val concated6 = fansi.Str.join(Nil, "")
+      val expected6 = fansi.Str("")
+      assert(concated6 == expected6)
+
+      val concated7 = fansi.Str.join(Nil, ",")
+      val expected7 = fansi.Str("")
+      assert(concated7 == expected7)
     }
     test("get"){
       val str = fansi.Str(rgbOps)
@@ -231,6 +239,9 @@ object FansiTests extends TestSuite{
         Console.RESET + fansi.Bold.On
       }
       test{
+        Console.RESET + fansi.Bold.Faint
+      }
+      test{
         Console.RESET + (fansi.Bold.On("Reset ") ++ fansi.Bold.Off("Bold"))
       }
       test{
@@ -282,13 +293,13 @@ object FansiTests extends TestSuite{
 
       test("trueBackgrounds") - tabulate(for(i <- Range(0, 0xFFFFFF, 10000)) yield fansi.Back.True(i))
 
-      test("blackState") - assert (fansi.Color.lookupAttr(273 << 3) == fansi.Color.True(0,0,0) )
+      test("blackState") - assert (fansi.Color.lookupAttr(273 << 4) == fansi.Color.True(0,0,0) )
 
-      test("whitState") -  assert (fansi.Color.lookupAttr(16777488 << 3) == fansi.Color.True(255,255,255) )
+      test("whitState") -  assert (fansi.Color.lookupAttr(16777488 << 4) == fansi.Color.True(255,255,255) )
 
-      test("redState") -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 3) == fansi.Color.True(255,0,0))
+      test("redState") -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 4) == fansi.Color.True(255,0,0))
 
-      test("lastFullState") - assert ( fansi.Color.lookupAttr(272 << 3) == fansi.Color.Full(255))
+      test("lastFullState") - assert ( fansi.Color.lookupAttr(272 << 4) == fansi.Color.Full(255))
 
       test("parsing"){
         def check(frag: fansi.Str) = {
@@ -315,23 +326,23 @@ object FansiTests extends TestSuite{
       test("failure"){
         test("tooLongToParse"){
           test - intercept[IllegalArgumentException]{
-            fansi.Str("\u001b[38;2;0;0;256m").plainText.toSeq.map(_.toInt)
+            fansi.Str("\u001b[38;2;0;0;256m", errorMode = fansi.ErrorMode.Throw).plainText.toSeq.map(_.toInt)
           }
           test - intercept[IllegalArgumentException]{
-            fansi.Str("\u001b[38;2;0;256;0m").plainText.toSeq.map(_.toInt)
+            fansi.Str("\u001b[38;2;0;256;0m", errorMode = fansi.ErrorMode.Throw).plainText.toSeq.map(_.toInt)
           }
           test - intercept[IllegalArgumentException]{
-            fansi.Str("\u001b[38;2;256;0;0m").plainText.toSeq.map(_.toInt)
+            fansi.Str("\u001b[38;2;256;0;0m", errorMode = fansi.ErrorMode.Throw).plainText.toSeq.map(_.toInt)
           }
           test - intercept[IllegalArgumentException]{
-            fansi.Str("\u001b[38;2;1111;0;0m").plainText.toSeq.map(_.toInt)
+            fansi.Str("\u001b[38;2;1111;0;0m", errorMode = fansi.ErrorMode.Throw).plainText.toSeq.map(_.toInt)
           }
         }
         test("truncatedParsing"){
           val escape = fansi.Color.True(255, 0, 0).escape
           for (i <- 1 until escape.length - 1)
           yield intercept[IllegalArgumentException] {
-            fansi.Str(escape.dropRight(i))
+            fansi.Str(escape.dropRight(i), errorMode = fansi.ErrorMode.Throw)
           }
         }
         test("args"){
@@ -409,7 +420,6 @@ object FansiTests extends TestSuite{
         test("scrollUp") - check("Hello\u001b[2SWorld", "[2S")
         test("scrollDown") - check("Hello\u001b[2TWorld", "[2T")
         test("horizontalVerticalPos") - check("Hello\u001b[2;2fWorld", "[2;2f")
-        test("selectGraphicRendition") - check("Hello\u001b[2mWorld", "[2m")
         test("auxPortOn") - check("Hello\u001b[5iWorld", "[5i")
         test("auxPortOff") - check("Hello\u001b[4iWorld", "[4i")
         test("deviceStatusReport") - check("Hello\u001b[6nWorld", "[6n")
