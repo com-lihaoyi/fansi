@@ -366,7 +366,7 @@ object Str{
     join(args)
   }
   def join(args: Iterable[Str], sep: fansi.Str = fansi.Str("")) = {
-    val length = args.iterator.map(_.length + sep.length).sum - sep.length
+    val length = math.max(0, args.iterator.map(_.length + sep.length).sum - sep.length)
     val chars = new Array[Char](length)
     val colors = new Array[State](length)
     var j = 0
