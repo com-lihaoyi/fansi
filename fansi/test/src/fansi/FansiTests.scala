@@ -77,6 +77,10 @@ object FansiTests extends TestSuite{
       val concated5 = fansi.Str.join(Seq(fansi.Str(rgbOps), fansi.Str("xyz"), fansi.Str(rgbOps)), sep = "lol").render
       val expected5 = rgbOps ++ RTC ++ "lol" ++ "xyz" ++ "lol" ++ rgbOps ++ RTC
       assert(concated5 == expected5)
+
+      val concated6 = fansi.Str.join(Nil, "")
+      val expected6 = fansi.Str("")
+      assert(concated6 == expected6)
     }
     test("get"){
       val str = fansi.Str(rgbOps)
@@ -318,23 +322,23 @@ object FansiTests extends TestSuite{
       test("failure"){
         test("tooLongToParse"){
           test - intercept[IllegalArgumentException]{
-            fansi.Str("\u001b[38;2;0;0;256m").plainText.toSeq.map(_.toInt)
+            fansi.Str("\u001b[38;2;0;0;256m", errorMode = fansi.ErrorMode.Throw).plainText.toSeq.map(_.toInt)
           }
           test - intercept[IllegalArgumentException]{
-            fansi.Str("\u001b[38;2;0;256;0m").plainText.toSeq.map(_.toInt)
+            fansi.Str("\u001b[38;2;0;256;0m", errorMode = fansi.ErrorMode.Throw).plainText.toSeq.map(_.toInt)
           }
           test - intercept[IllegalArgumentException]{
-            fansi.Str("\u001b[38;2;256;0;0m").plainText.toSeq.map(_.toInt)
+            fansi.Str("\u001b[38;2;256;0;0m", errorMode = fansi.ErrorMode.Throw).plainText.toSeq.map(_.toInt)
           }
           test - intercept[IllegalArgumentException]{
-            fansi.Str("\u001b[38;2;1111;0;0m").plainText.toSeq.map(_.toInt)
+            fansi.Str("\u001b[38;2;1111;0;0m", errorMode = fansi.ErrorMode.Throw).plainText.toSeq.map(_.toInt)
           }
         }
         test("truncatedParsing"){
           val escape = fansi.Color.True(255, 0, 0).escape
           for (i <- 1 until escape.length - 1)
           yield intercept[IllegalArgumentException] {
-            fansi.Str(escape.dropRight(i))
+            fansi.Str(escape.dropRight(i), errorMode = fansi.ErrorMode.Throw)
           }
         }
         test("args"){
