@@ -261,7 +261,7 @@ object Str{
     *                  input `CharSequence` contains an Ansi escape not
     *                  recognized by Fansi as a valid color.
     */
-  def apply(raw: CharSequence, errorMode: ErrorMode = ErrorMode.Throw): fansi.Str = {
+  def apply(raw: CharSequence, errorMode: ErrorMode = ErrorMode.Sanitize): fansi.Str = {
     // Pre-allocate some arrays for us to fill up. They will probably be
     // too big if the input has any ansi codes at all but that's ok, we'll
     // trim them later.

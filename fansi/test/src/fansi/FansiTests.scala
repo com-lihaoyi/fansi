@@ -231,6 +231,9 @@ object FansiTests extends TestSuite{
         Console.RESET + fansi.Bold.On
       }
       test{
+        Console.RESET + fansi.Bold.Faint
+      }
+      test{
         Console.RESET + (fansi.Bold.On("Reset ") ++ fansi.Bold.Off("Bold"))
       }
       test{
@@ -282,13 +285,13 @@ object FansiTests extends TestSuite{
 
       test("trueBackgrounds") - tabulate(for(i <- Range(0, 0xFFFFFF, 10000)) yield fansi.Back.True(i))
 
-      test("blackState") - assert (fansi.Color.lookupAttr(273 << 3) == fansi.Color.True(0,0,0) )
+      test("blackState") - assert (fansi.Color.lookupAttr(273 << 4) == fansi.Color.True(0,0,0) )
 
-      test("whitState") -  assert (fansi.Color.lookupAttr(16777488 << 3) == fansi.Color.True(255,255,255) )
+      test("whitState") -  assert (fansi.Color.lookupAttr(16777488 << 4) == fansi.Color.True(255,255,255) )
 
-      test("redState") -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 3) == fansi.Color.True(255,0,0))
+      test("redState") -  assert (fansi.Color.lookupAttr((0xFF0000 + 273) << 4) == fansi.Color.True(255,0,0))
 
-      test("lastFullState") - assert ( fansi.Color.lookupAttr(272 << 3) == fansi.Color.Full(255))
+      test("lastFullState") - assert ( fansi.Color.lookupAttr(272 << 4) == fansi.Color.Full(255))
 
       test("parsing"){
         def check(frag: fansi.Str) = {
@@ -409,7 +412,6 @@ object FansiTests extends TestSuite{
         test("scrollUp") - check("Hello\u001b[2SWorld", "[2S")
         test("scrollDown") - check("Hello\u001b[2TWorld", "[2T")
         test("horizontalVerticalPos") - check("Hello\u001b[2;2fWorld", "[2;2f")
-        test("selectGraphicRendition") - check("Hello\u001b[2mWorld", "[2m")
         test("auxPortOn") - check("Hello\u001b[5iWorld", "[5i")
         test("auxPortOff") - check("Hello\u001b[4iWorld", "[4i")
         test("deviceStatusReport") - check("Hello\u001b[6nWorld", "[6n")
