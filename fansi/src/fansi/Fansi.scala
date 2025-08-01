@@ -224,7 +224,7 @@ object Str{
     * Make the construction of [[fansi.Str]]s from `String`s and other
     * `CharSequence`s automatic
     */
-  implicit def implicitApply(raw: CharSequence): fansi.Str = apply(raw)
+  implicit def implicitApply(raw: String with Singleton): fansi.Str = apply(raw)
 
   /**
     * Regex that can be used to identify Ansi escape patterns in a string.
