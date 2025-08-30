@@ -356,6 +356,101 @@ object FansiTests extends TestSuite{
       }
     }
 
+    test("applyRaw"){
+      test("completeSequences"){
+        // Test that complete sequences work normally
+        val (partial1, result1) = fansi.Str.applyRaw("hello" + R + "world")
+        assert(partial1 == "")
+        assert(result1.render == "hello" + R + "world" + RTC)
+        assert(result1.plainText == "helloworld")
+      }
+
+      test("partialEscapeAtEnd"){
+        // Test partial escape sequences at the end
+        val (partial2, result2) = fansi.Str.applyRaw("hello\u001b[")
+        assert(partial2 == "\u001b[")
+        assert(result2.plainText == "hello")
+
+        val (partial3, result3) = fansi.Str.applyRaw("hello\u001b[3")
+        assert(partial3 == "\u001b[3")
+        assert(result3.plainText == "hello")
+
+        val (partial4, result4) = fansi.Str.applyRaw("hello\u001b[31")
+        assert(partial4 == "\u001b[31")
+        assert(result4.plainText == "hello")
+
+        val (partial5, result5) = fansi.Str.applyRaw("hello\u001b[31;")
+        assert(partial5 == "\u001b[31;")
+        assert(result5.plainText == "hello")
+      }
+
+      test("partialTrueColorEscape"){
+        // Test partial True Color escape sequences - only incomplete prefixes should be partial
+        val (partial6, result6) = fansi.Str.applyRaw("hello\u001b[38;2")
+        assert(partial6 == "\u001b[38;2")
+        assert(result6.plainText == "hello")
+
+        // These are complete prefixes that enter True Color parsing, so they should be handled by ErrorMode
+        val (partial7, result7) = fansi.Str.applyRaw("hello\u001b[38;2;255", fansi.ErrorMode.Sanitize)
+        assert(partial7 == "")
+        assert(result7.plainText == "hello[38;2;255") // Sanitized - escape char removed
+
+        val (partial8, result8) = fansi.Str.applyRaw("hello\u001b[38;2;255;0", fansi.ErrorMode.Sanitize)
+        assert(partial8 == "")
+        assert(result8.plainText == "hello[38;2;255;0") // Sanitized
+
+        val (partial9, result9) = fansi.Str.applyRaw("hello\u001b[38;2;255;0;", fansi.ErrorMode.Sanitize)
+        assert(partial9 == "")
+        assert(result9.plainText == "hello[38;2;255;0;") // Sanitized
+      }
+
+      test("justEscapeCharacter"){
+        // Test just the escape character at the end
+        val (partial10, result10) = fansi.Str.applyRaw("hello\u001b")
+        assert(partial10 == "\u001b")
+        assert(result10.plainText == "hello")
+      }
+
+      test("noPartialEscape"){
+        // Test strings with no partial escape
+        val (partial11, result11) = fansi.Str.applyRaw("hello world")
+        assert(partial11 == "")
+        assert(result11.plainText == "hello world")
+      }
+
+      test("invalidEscapeNotAtEnd"){
+        // Test invalid escape sequences not at the end (should use ErrorMode)
+        val (partial12, result12) = fansi.Str.applyRaw("hello\u001b[99ZZworld", fansi.ErrorMode.Sanitize)
+        assert(partial12 == "")
+        assert(result12.plainText == "hello[99ZZworld") // Escape char removed, rest kept
+
+        val (partial13, result13) = fansi.Str.applyRaw("hello\u001b[99ZZworld", fansi.ErrorMode.Strip)
+        assert(partial13 == "")
+        assert(result13.plainText == "helloZworld") // ANSI regex matches up to first Z, leaving second Z and world
+      }
+
+      test("mixedValidAndPartial"){
+        // Test valid sequences followed by partial
+        val (partial14, result14) = fansi.Str.applyRaw("hello" + R + "world" + G + "\u001b[3")
+        assert(partial14 == "\u001b[3")
+        // Colors should be preserved up to the partial escape
+        assert(result14.plainText == "helloworld")
+        // Check that colors are applied correctly
+        val expectedColors = fansi.Str("hello").getColors ++
+                            Array.fill(5)(fansi.Color.Red.applyMask) // "world" in red
+        assert(result14.getColors.toSeq == expectedColors.toSeq)
+      }
+
+      test("errorModeWithPartial"){
+        // Test that all error modes behave the same with partial escapes (they're detected before ErrorMode kicks in)
+        for (errorMode <- Seq(fansi.ErrorMode.Throw, fansi.ErrorMode.Strip, fansi.ErrorMode.Sanitize)) {
+          val (partial, result) = fansi.Str.applyRaw("hello\u001b[3", errorMode)
+          assert(partial == "\u001b[3")
+          assert(result.plainText == "hello")
+        }
+      }
+    }
+
     test("emitAnsiCodes"){
       test("basic") - assert(
         fansi.Attrs.emitAnsiCodes(0, fansi.Color.Red.applyMask) == Console.RED,
