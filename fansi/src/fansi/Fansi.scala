@@ -251,17 +251,17 @@ object Str{
   def Throw(raw: CharSequence) = apply(raw, ErrorMode.Throw)
   /**
     * Creates an [[fansi.Str]] from a non-fansi `java.lang.String` or other
-    * `CharSequence`.
-    *
-    * Note that this method is implicit, meaning you can pass in a
-    * `java.lang.String` anywhere an `fansi.Str` is required and it will be
-    * automatically parsed and converted for you.
+    * `CharSequence`, potentially leaving partial escape sequences at the end.
     *
     * @param errorMode Used to control what kind of behavior you get if the
     *                  input `CharSequence` contains an Ansi escape not
     *                  recognized by Fansi as a valid color.
+    * @return A tuple of (remaining partial escape sequence, parsed fansi.Str).
+    *         The first element will be the partial escape sequence at the end
+    *         of the input, or empty if there was none. The second element is
+    *         the parsed fansi.Str from the rest of the input.
     */
-  def apply(raw: CharSequence, errorMode: ErrorMode = ErrorMode.Sanitize): fansi.Str = {
+  def applyRaw(raw: CharSequence, errorMode: ErrorMode = ErrorMode.Sanitize): (CharSequence, fansi.Str) = {
     // Pre-allocate some arrays for us to fill up. They will probably be
     // too big if the input has any ansi codes at all but that's ok, we'll
     // trim them later.
@@ -277,7 +277,19 @@ object Str{
       if (char == '\u001b' || char == '\u009b') {
         val escapeStartSourceIndex = sourceIndex
         ParseMap.query(raw, escapeStartSourceIndex) match{
-          case None => sourceIndex = errorMode.handle(sourceIndex, raw)
+          case None =>
+            // Check if this could be a partial escape sequence at the end
+            if (isPartialEscapeAtEnd(raw, escapeStartSourceIndex)) {
+              // Return the partial escape sequence and the parsed content so far
+              val partialEscape = raw.subSequence(escapeStartSourceIndex, raw.length)
+              val str = new Str(
+                util.Arrays.copyOfRange(chars, 0, destIndex),
+                util.Arrays.copyOfRange(colors, 0, destIndex)
+              )
+              return (partialEscape, str)
+            } else {
+              sourceIndex = errorMode.handle(sourceIndex, raw)
+            }
           case Some(tuple) =>
             tuple match {
               case (newIndex, Left(color)) =>
@@ -296,6 +308,19 @@ object Str{
                 def fail() = {
                   sourceIndex = errorMode.handle(escapeStartSourceIndex, raw)
                 }
+                def failWithPartial(): (CharSequence, fansi.Str) = {
+                  if (isPartialEscapeAtEnd(raw, escapeStartSourceIndex)) {
+                    val partialEscape = raw.subSequence(escapeStartSourceIndex, raw.length)
+                    val str = new Str(
+                      util.Arrays.copyOfRange(chars, 0, destIndex),
+                      util.Arrays.copyOfRange(colors, 0, destIndex)
+                    )
+                    (partialEscape, str)
+                  } else {
+                    fail()
+                    null // This won't be reached due to exception in Throw mode
+                  }
+                }
                 def getNumber() = {
                   var value = 0
                   var count = 0
@@ -306,24 +331,34 @@ object Str{
                   }
                   value
                 }
-                if (!isDigit(sourceIndex)) fail()
-                else {
+                if (!isDigit(sourceIndex)) {
+                  val partialResult = failWithPartial()
+                  if (partialResult != null) return partialResult
+                } else {
                   val r = getNumber()
-                  if (!checkChar(sourceIndex, ';') || !isDigit(sourceIndex + 1)) fail()
-                  else {
+                  if (!checkChar(sourceIndex, ';') || !isDigit(sourceIndex + 1)) {
+                    val partialResult = failWithPartial()
+                    if (partialResult != null) return partialResult
+                  } else {
                     sourceIndex += 1
                     val g = getNumber()
-                    if (!checkChar(sourceIndex, ';') || !isDigit(sourceIndex + 1)) fail()
-                    else {
+                    if (!checkChar(sourceIndex, ';') || !isDigit(sourceIndex + 1)) {
+                      val partialResult = failWithPartial()
+                      if (partialResult != null) return partialResult
+                    } else {
                       sourceIndex += 1
                       val b = getNumber()
-                      if (!checkChar(sourceIndex, 'm')) fail()
-                      else {
+                      if (!checkChar(sourceIndex, 'm')) {
+                        val partialResult = failWithPartial()
+                        if (partialResult != null) return partialResult
+                      } else {
                         sourceIndex += 1
                         // Manually perform the `transform` for perf to avoid
                         // calling `True` which instantiates/allocaties an `Attr`
-                        if(!(0 <= r && r < 256 && 0 <= g && g < 256 && 0 <= b && b < 256)) fail()
-                        else{
+                        if(!(0 <= r && r < 256 && 0 <= g && g < 256 && 0 <= b && b < 256)) {
+                          val partialResult = failWithPartial()
+                          if (partialResult != null) return partialResult
+                        } else{
                           currentColor = {
                             (currentColor & ~category.mask) |
                               ((273 + category.trueIndex(r, g, b)) << category.offset)
@@ -343,10 +378,57 @@ object Str{
       }
     }
 
-    new Str(
+    val str = new Str(
       util.Arrays.copyOfRange(chars, 0, destIndex),
       util.Arrays.copyOfRange(colors, 0, destIndex)
     )
+    ("", str) // No partial escape sequence found
+  }
+
+  // Helper method to determine if an escape sequence at the end might be partial
+  private def isPartialEscapeAtEnd(raw: CharSequence, escapeStart: Int): Boolean = {
+    val firstChar = raw.charAt(escapeStart)
+    if (firstChar != '\u001b' && firstChar != '\u009b') return false
+
+    val remaining = raw.subSequence(escapeStart, raw.length).toString
+
+    // Very short sequences are likely partial
+    if (remaining.length <= 2) return true
+
+    if (remaining.startsWith("\u001b[") || remaining.startsWith("\u009b")) {
+      val params = remaining.substring(2)
+
+      // Just ESC[ is partial
+      if (params.isEmpty) return true
+
+      // Complete True Color prefixes should be handled by True Color parsing
+      if (params.matches("^38;2;.*") || params.matches("^48;2;.*")) return false
+
+      // Incomplete True Color prefixes are partial
+      if (params.matches("^38;2$") || params.matches("^48;2$")) return true
+
+      // Simple numeric patterns (excluding True Color codes) are partial
+      if (params.matches("^[0-9]{1,2}$") && !params.equals("38") && !params.equals("48")) return true
+      if (params.matches("^[0-9]{1,2};$") && !params.startsWith("38") && !params.startsWith("48")) return true
+    }
+
+    false
+  }
+
+  /**
+    * Creates an [[fansi.Str]] from a non-fansi `java.lang.String` or other
+    * `CharSequence`.
+    *
+    * Note that this method is implicit, meaning you can pass in a
+    * `java.lang.String` anywhere an `fansi.Str` is required and it will be
+    * automatically parsed and converted for you.
+    *
+    * @param errorMode Used to control what kind of behavior you get if the
+    *                  input `CharSequence` contains an Ansi escape not
+    *                  recognized by Fansi as a valid color.
+    */
+  def apply(raw: CharSequence, errorMode: ErrorMode = ErrorMode.Sanitize): fansi.Str = {
+    applyRaw(raw, errorMode)._2
   }
 
   /**
