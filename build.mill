@@ -37,7 +37,7 @@ trait FansiModule extends PublishModule with Mima with CrossScalaModule with Pla
 }
 
 trait FansiTestModule extends ScalaModule with TestModule.Utest {
-  def mvnDeps = Seq(mvn"com.lihaoyi::utest::0.8.3")
+  def mvnDeps = Seq(mvn"com.lihaoyi::utest::0.8.9")
 }
 
 object fansi extends Module {
