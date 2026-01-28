@@ -33,7 +33,7 @@ trait FansiModule extends PublishModule with Mima with CrossScalaModule with Pla
     )
   )
 
-  def mvnDeps = Seq(mvn"com.lihaoyi::sourcecode::0.4.0")
+  def mvnDeps = Seq(mvn"com.lihaoyi::sourcecode::0.4.4")
 }
 
 trait FansiTestModule extends ScalaModule with TestModule.Utest {
