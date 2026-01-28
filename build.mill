@@ -9,7 +9,7 @@ import mill.javalib.api.JvmWorkerUtil.isScala3
 
 val dottyCommunityBuildVersion = sys.props.get("dottyVersion")
 
-val scalaVersions = Seq("2.12.20", "2.13.15", "3.3.6") ++ dottyCommunityBuildVersion
+val scalaVersions = Seq("2.12.20", "2.13.18", "3.3.6") ++ dottyCommunityBuildVersion
 
 trait FansiModule extends PublishModule with Mima with CrossScalaModule with PlatformScalaModule {
   def artifactName = "fansi"
