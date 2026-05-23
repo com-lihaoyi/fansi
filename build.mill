@@ -54,7 +54,7 @@ object fansi extends Module {
 
   object native extends Cross[NativeFansiModule](scalaVersions)
   trait NativeFansiModule extends FansiModule with ScalaNativeModule{
-    def scalaNativeVersion = "0.5.8"
+    def scalaNativeVersion = "0.5.12"
     object test extends ScalaNativeTests with FansiTestModule
   }
 }
