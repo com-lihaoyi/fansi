@@ -485,6 +485,11 @@ object FansiTests extends TestSuite{
           fansi.Color.Red != fansi.Bold.On ++ fansi.Color.Red
         )
       }
+      test("multipleStructuralEquality"){
+        val a = fansi.Color.Red ++ fansi.Bold.On
+        val b = fansi.Color.Red ++ fansi.Bold.On
+        assert(a == b, Set(a, b).size == 1)
+      }
     }
 //    test("perf"){
 //      val input = s"+++$R---$G***$B///" * 1000

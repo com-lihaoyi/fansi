@@ -592,7 +592,7 @@ object Attrs{
       case (lhs: Attr, rhs: Attr) => lhs eq rhs
       case (lhs: Attr, rhs: Attrs.Multiple) if rhs.attrs.length == 1 => lhs eq rhs.attrs(0)
       case (lhs: Attrs.Multiple, rhs: Attr) if lhs.attrs.length == 1 => lhs.attrs(0) eq rhs
-      case (lhs: Attrs.Multiple, rhs: Attrs.Multiple) => lhs.attrs eq rhs.attrs
+      case (lhs: Attrs.Multiple, rhs: Attrs.Multiple) => lhs.attrs == rhs.attrs
       case _ => false
     }
 
