@@ -425,6 +425,17 @@ object FansiTests extends TestSuite{
         test("deviceStatusReport") - check("Hello\u001b[6nWorld", "[6n")
         test("saveCursor") - check("Hello\u001b[sWorld", "[s")
         test("restoreCursor") - check("Hello\u001b[uWorld", "[u")
+
+        test("stripWithoutCompleteEscape"){
+          // When no complete escape sequence starts at the escape character,
+          // Strip removes only the escape character
+          test("truncatedCsi") - assert(fansi.Str.Strip("Hello\u001b[").plainText == "Hello[")
+          test("loneEscape") - assert(fansi.Str.Strip("Hello\u001bWorld").plainText == "HelloWorld")
+          test("loneC1Csi") - assert(fansi.Str.Strip("Hello\u009b").plainText == "Hello")
+          test("laterEscapeIsNotSkippedTo") - assert(
+            fansi.Str.Strip("Hello\u001bWorld\u001b[2A!").plainText == "HelloWorld!"
+          )
+        }
       }
       test("outOfBounds"){
         intercept[IllegalArgumentException]{ fansi.Str("foo").splitAt(10) }

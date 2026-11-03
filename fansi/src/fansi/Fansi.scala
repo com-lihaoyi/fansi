@@ -454,13 +454,15 @@ object ErrorMode{
 
   /**
     * Find the end of the unknown Ansi escape and skip over it's characters
-    * entirely, so no trace of them appear in the parsed fansi.Str.
+    * entirely, so no trace of them appear in the parsed fansi.Str. If no
+    * complete escape sequence starts there, skip only the `\u001b` or
+    * `\u009b`, as [[Sanitize]] does.
     */
   case object Strip extends ErrorMode{
     def handle(sourceIndex: Int, raw: CharSequence) = {
-      val matcher = Str.ansiRegex.matcher(raw)
-      matcher.find(sourceIndex)
-      matcher.end()
+      val matcher = Str.ansiRegex.matcher(raw).region(sourceIndex, raw.length)
+      if (matcher.lookingAt()) matcher.end()
+      else sourceIndex + 1
     }
   }
 }
